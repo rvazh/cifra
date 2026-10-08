@@ -1,0 +1,23 @@
+.footer {
+  background: var(--rodape);
+  color: var(--rodape-texto);
+  padding: 40px 0;
+}
+
+.footer__conteudo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.footer__marca {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--dourado);
+}
+
+.footer__copy {
+  font-size: 14px;
+}
