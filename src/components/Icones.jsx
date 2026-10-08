@@ -24,6 +24,62 @@ export const IconeSeta = (p) => (
   </Svg>
 );
 
+export const IconeCategorias = (p) => (
+  <Svg {...p}>
+    <rect x="4" y="4" width="6" height="6" rx="1.5" />
+    <rect x="14" y="4" width="6" height="6" rx="1.5" />
+    <rect x="4" y="14" width="6" height="6" rx="1.5" />
+    <path d="M17 14v6" />
+    <path d="M14 17h6" />
+  </Svg>
+);
+
+export const IconeAlvo = (p) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <circle cx="12" cy="12" r="5" />
+    <circle cx="12" cy="12" r="1" />
+  </Svg>
+);
+
+export const IconeSino = (p) => (
+  <Svg {...p}>
+    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+  </Svg>
+);
+
+export const IconeMoeda = (p) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .9-3 2.1 0 2.8 6 1.3 6 4 0 1.2-1.3 2-3 2-1.4 0-2.5-.5-3-1.6" />
+    <path d="M12 6.5V8" />
+    <path d="M12 16v1.5" />
+  </Svg>
+);
+
+export const IconeDispositivos = (p) => (
+  <Svg {...p}>
+    <rect x="2" y="4" width="14" height="10" rx="2" />
+    <path d="M6 18h6" />
+    <path d="M9 14v4" />
+    <rect x="17" y="9" width="5" height="11" rx="1.5" />
+  </Svg>
+);
+
+export const IconeTransferir = (p) => (
+  <Svg {...p}>
+    <path d="M7 7h11l-3-3" />
+    <path d="M17 17H6l3 3" />
+  </Svg>
+);
+
+export const IconeCheck = (p) => (
+  <Svg {...p}>
+    <path d="M20 6L9 17l-5-5" />
+  </Svg>
+);
+
 export const IconeMais = (p) => (
   <Svg {...p}>
     <path d="M12 5v14" />

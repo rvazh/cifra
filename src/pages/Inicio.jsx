@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import PainelExemplo from '../components/PainelExemplo.jsx';
+import PassoAPasso from '../components/PassoAPasso.jsx';
+import Funcionalidades from '../components/Funcionalidades.jsx';
 import { IconeSeta, IconeMais, IconeCarteira, IconeGrafico } from '../components/Icones.jsx';
 import './Inicio.css';
 
@@ -72,6 +74,12 @@ export default function Inicio() {
           </div>
         </div>
       </section>
+
+      {/* ===== Passo a passo ===== */}
+      <PassoAPasso />
+
+      {/* ===== Funcionalidades ===== */}
+      <Funcionalidades />
     </>
   );
 }
