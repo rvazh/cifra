@@ -13,6 +13,7 @@ import {
   IconeLivro,
 } from './Icones.jsx';
 import { valoresEscondidos, alternarValores } from '../dados/preferencias.js';
+import { encerrarSessao } from '../dados/acesso.js';
 import './MenuLateral.css';
 
 // Itens do menu lateral do sistema (usado no Painel, Lançamentos...)
@@ -29,12 +30,9 @@ const menu = [
 export default function MenuLateral() {
   const navegar = useNavigate();
 
+  // Sai da conta (os dados continuam salvos neste aparelho)
   function sair() {
-    try {
-      localStorage.removeItem('cifra:usuario');
-    } catch {
-      /* sem acesso ao armazenamento: tudo bem */
-    }
+    encerrarSessao();
     navegar('/entrar');
   }
 

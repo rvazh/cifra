@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import logoCifra from '../assets/cifra-logo.png';
 import { IconeSeta, IconeCheck } from '../components/Icones.jsx';
+import { conferirAcesso, iniciarSessao } from '../dados/acesso.js';
 import './Entrar.css';
 
 // Ícone do Google (src/assets/google.png), mostrado à direita do texto do botão.
@@ -35,24 +36,40 @@ export default function Entrar() {
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [erro, setErro] = useState('');
+  const [conferindo, setConferindo] = useState(false);
   const navegar = useNavigate();
+  const local = useLocation();
 
-  function enviar(evento) {
+  async function enviar(evento) {
     evento.preventDefault(); // impede a página de recarregar
-    // Por enquanto não há validação: qualquer usuário e senha entram.
-    // O nome digitado fica salvo só neste aparelho, para o painel dar "Boa tarde, fulano!"
-    try {
-      localStorage.setItem('cifra:usuario', usuario.trim());
-    } catch {
-      /* sem acesso ao armazenamento: tudo bem */
+    if (!usuario.trim() || !senha) {
+      setErro('Preencha o usuário e a senha.');
+      return;
     }
-    navegar('/painel');
+    setConferindo(true);
+    let certo = false;
+    try {
+      certo = await conferirAcesso(usuario, senha);
+    } catch {
+      setConferindo(false);
+      setErro('Não foi possível conferir o acesso neste navegador. Abra o site pelo endereço com https.');
+      return;
+    }
+    setConferindo(false);
+    if (!certo) {
+      setErro('Usuário ou senha incorretos.');
+      setSenha('');
+      return;
+    }
+    iniciarSessao();
+    // Volta para a tela que a pessoa tentou abrir, ou vai para o painel
+    navegar(local.state?.de || '/painel', { replace: true });
   }
 
   function entrarComGoogle() {
-    // Por enquanto só leva ao painel, igual ao botão "Entrar".
-    // O login de verdade com o Google será ligado aqui depois.
-    navegar('/painel');
+    // O login com o Google ainda não está ligado
+    setErro('Entrar com o Google ainda não está disponível. Use o usuário e a senha.');
   }
 
   return (
@@ -79,7 +96,12 @@ export default function Entrar() {
               type="text"
               autoComplete="username"
               value={usuario}
-              onChange={(e) => setUsuario(e.target.value)}
+              onChange={(e) => {
+                setUsuario(e.target.value);
+                setErro('');
+              }}
+              aria-invalid={erro ? 'true' : undefined}
+              aria-describedby={erro ? 'erro-acesso' : undefined}
             />
           </div>
 
@@ -99,7 +121,12 @@ export default function Entrar() {
                 type={mostrarSenha ? 'text' : 'password'}
                 autoComplete="current-password"
                 value={senha}
-                onChange={(e) => setSenha(e.target.value)}
+                onChange={(e) => {
+                  setSenha(e.target.value);
+                  setErro('');
+                }}
+                aria-invalid={erro ? 'true' : undefined}
+                aria-describedby={erro ? 'erro-acesso' : undefined}
               />
               <button
                 type="button"
@@ -113,13 +140,19 @@ export default function Entrar() {
             </div>
           </div>
 
+          {erro && (
+            <p id="erro-acesso" className="entrar__erro" role="alert">
+              {erro}
+            </p>
+          )}
+
           <button type="button" className="entrar__google" onClick={entrarComGoogle}>
             Entrar com o Google
             {iconeGoogle && <img className="entrar__google-icone" src={iconeGoogle} alt="" />}
           </button>
 
-          <button type="submit" className="entrar__botao">
-            Entrar
+          <button type="submit" className="entrar__botao" disabled={conferindo}>
+            {conferindo ? 'Conferindo…' : 'Entrar'}
             <IconeSeta tamanho={20} cor="#141414" espessura={2.2} />
           </button>
 

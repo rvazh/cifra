@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
 import Inicio from './pages/Inicio.jsx';
@@ -17,6 +17,7 @@ import Objetivos from './pages/Objetivos.jsx';
 import Configuracoes from './pages/Configuracoes.jsx';
 import Cursos from './pages/Cursos.jsx';
 import EmBreve from './pages/EmBreve.jsx';
+import { estaLogado } from './dados/acesso.js';
 
 // Páginas que aparecem sem o cabeçalho e o rodapé do site
 const telasSemMenu = ['/entrar', '/privacidade', '/termos'];
@@ -34,6 +35,15 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
+
+  // Telas do sistema (/painel...) só abrem depois do login
+  if (pathname.startsWith('/painel') && !estaLogado()) {
+    return <Navigate to="/entrar" replace state={{ de: pathname }} />;
+  }
+  // Quem já entrou e abre a tela de login vai direto para o painel
+  if (pathname === '/entrar' && estaLogado()) {
+    return <Navigate to="/painel" replace />;
+  }
 
   return (
     <div className="app">
