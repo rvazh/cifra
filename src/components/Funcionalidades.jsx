@@ -21,8 +21,8 @@ const recursosEsquerda = [
   },
   {
     Icone: IconeCategorias,
-    titulo: 'Categorias e subcategorias',
-    texto: 'Crie categorias que fazem sentido para a sua rotina.',
+    titulo: 'Planejamentos prontos',
+    texto: 'Você pode tanto criar o seu planejamento quanto usar os nossos, já prontos.',
   },
   {
     Icone: IconeAlvo,
@@ -78,7 +78,7 @@ export default function Funcionalidades() {
         <div className="func__cabecalho">
           <div className="func__cabecalho-titulo">
             <span className="func__rotulo">Funcionalidades</span>
-            <h2 className="func__titulo">Um pouco do que o CIFRA pode fazer por você</h2>
+            <h2 className="func__titulo">Um pouco do que a CIFRA pode fazer por você</h2>
           </div>
           <p className="func__subtitulo">
             Recursos pensados para deixar o controle do seu dinheiro simples.

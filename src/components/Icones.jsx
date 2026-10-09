@@ -74,6 +74,91 @@ export const IconeTransferir = (p) => (
   </Svg>
 );
 
+export const IconeCoracao = (p) => (
+  <Svg {...p}>
+    <path d="M19.5 12.6L12 20l-7.5-7.4A4.8 4.8 0 0 1 12 6.3a4.8 4.8 0 0 1 7.5 6.3z" />
+  </Svg>
+);
+
+export const IconeBandeira = (p) => (
+  <Svg {...p}>
+    <path d="M5 21V4" />
+    <path d="M5 4h11l-2 4 2 4H5" />
+  </Svg>
+);
+
+export const IconeRepetir = (p) => (
+  <Svg {...p}>
+    <path d="M17 2l3 3-3 3" />
+    <path d="M4 11V9a4 4 0 0 1 4-4h12" />
+    <path d="M7 22l-3-3 3-3" />
+    <path d="M20 13v2a4 4 0 0 1-4 4H4" />
+  </Svg>
+);
+
+export const IconeCartao = (p) => (
+  <Svg {...p}>
+    <rect x="2" y="5" width="20" height="14" rx="2" />
+    <path d="M2 10h20" />
+    <path d="M6 15h4" />
+  </Svg>
+);
+
+export const IconeCalendario = (p) => (
+  <Svg {...p}>
+    <rect x="3" y="5" width="18" height="16" rx="2" />
+    <path d="M3 10h18" />
+    <path d="M8 3v4" />
+    <path d="M16 3v4" />
+  </Svg>
+);
+
+export const IconeBackup = (p) => (
+  <Svg {...p}>
+    <path d="M12 3v12" />
+    <path d="M7 10l5 5 5-5" />
+    <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+  </Svg>
+);
+
+export const IconeCadeado = (p) => (
+  <Svg {...p}>
+    <rect x="4" y="11" width="16" height="10" rx="2" />
+    <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+  </Svg>
+);
+
+export const IconeSorriso = (p) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M8.5 14a4 4 0 0 0 7 0" />
+    <path d="M9 9.5h.01" />
+    <path d="M15 9.5h.01" />
+  </Svg>
+);
+
+export const IconeMonitor = (p) => (
+  <Svg {...p}>
+    <rect x="2" y="4" width="20" height="13" rx="2" />
+    <path d="M8 21h8" />
+    <path d="M12 17v4" />
+  </Svg>
+);
+
+export const IconeCelular = (p) => (
+  <Svg {...p}>
+    <rect x="6" y="2" width="12" height="20" rx="2.5" />
+    <path d="M11 18h2" />
+  </Svg>
+);
+
+export const IconePizza = (p) => (
+  <Svg {...p}>
+    <path d="M21 12a9 9 0 1 1-9-9v9z" />
+    <path d="M14 3.2A9 9 0 0 1 20.8 10H14z" />
+  </Svg>
+);
+
 export const IconeCheck = (p) => (
   <Svg {...p}>
     <path d="M20 6L9 17l-5-5" />

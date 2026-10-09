@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 import PainelExemplo from '../components/PainelExemplo.jsx';
 import PassoAPasso from '../components/PassoAPasso.jsx';
 import Funcionalidades from '../components/Funcionalidades.jsx';
+import Objetivos from '../components/Objetivos.jsx';
+import Seguranca from '../components/Seguranca.jsx';
+import Perguntas from '../components/Perguntas.jsx';
 import { IconeSeta, IconeMais, IconeCarteira, IconeGrafico } from '../components/Icones.jsx';
 import './Inicio.css';
 
@@ -35,8 +38,8 @@ export default function Inicio() {
             o tempo todo!
           </h1>
           <p className="hero__descricao">
-            Registre gastos e recebimentos, acompanhe o saldo de cada conta e entenda para
-            onde vai cada real — tudo num só lugar.
+            Registre ganhos e gastos, acompanhe o saldo de cada conta e entenda para onde vai
+            cada real — tudo em um só lugar.
           </p>
           <div>
             <Link to="/entrar" className="hero__botao">
@@ -80,6 +83,15 @@ export default function Inicio() {
 
       {/* ===== Funcionalidades ===== */}
       <Funcionalidades />
+
+      {/* ===== Objetivos ===== */}
+      <Objetivos />
+
+      {/* ===== Segurança ===== */}
+      <Seguranca />
+
+      {/* ===== Perguntas frequentes ===== */}
+      <Perguntas />
     </>
   );
 }

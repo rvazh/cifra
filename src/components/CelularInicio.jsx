@@ -13,10 +13,10 @@ export default function CelularInicio() {
     <div className="celular" role="img" aria-label="Exemplo da tela inicial do CIFRA no celular">
       <div className="celular__tela">
         <div className="celular__topo">
-          <span className="celular__avatar">M</span>
+          <span className="celular__avatar">J</span>
           <span className="celular__saudacao">
             <span className="celular__saudacao-pequena">Bom dia,</span>
-            <span className="celular__nome">Marcos</span>
+            <span className="celular__nome">João</span>
           </span>
           <span className="celular__sino">
             <IconeSino tamanho={16} cor="#eaaf5a" />

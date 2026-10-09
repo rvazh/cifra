@@ -8,20 +8,39 @@ const contas = [
   { nome: 'Carteira', valor: 'R$ 500,45', Icone: IconeDinheiro, fundo: '#f6e3c6', cor: '#6b4410' },
 ];
 
-const lancamentos = [
-  { nome: 'Mercado', valor: '− R$ 312,80', tipo: 'saida' },
-  { nome: 'Conta de luz', valor: '− R$ 189,40', tipo: 'saida' },
-  { nome: 'Salário', valor: '+ R$ 5.200,00', tipo: 'entrada' },
+// Dois cartões flutuantes: um de entradas (ganhos) e um de saídas (gastos)
+const entradas = [
+  { nome: 'Adriana', valor: '+ R$ 312,80' },
+  { nome: 'Guilherme (Extra)', valor: '+ R$ 500,00' },
+  { nome: 'Salário', valor: '+ R$ 5.200,00' },
 ];
+
+const saidas = [
+  { nome: 'Mercado', valor: '− R$ 812,90' },
+  { nome: 'Conta de luz', valor: '− R$ 189,40' },
+  { nome: 'Parcela Carro', valor: '− R$ 1.390,99' },
+];
+
+function CartaoLancamentos({ titulo, itens, tipo }) {
+  return (
+    <div className={`painel__ultimos painel__ultimos--${tipo}`}>
+      <div className="painel__ultimos-titulo">{titulo}</div>
+      {itens.map(({ nome, valor }) => (
+        <div key={nome} className="lancamento">
+          <span className="lancamento__nome">{nome}</span>
+          <span className={`lancamento__valor lancamento__valor--${tipo}`}>{valor}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function PainelExemplo() {
   return (
     <div className="painel" aria-label="Exemplo da tela do CIFRA" role="img">
-      <div className="painel__enfeite" />
-
       <div className="painel__janela">
         <div className="painel__topo">
-          <span className="painel__marca">cifra</span>
+          <span className="painel__marca">CIFRA</span>
           <span className="painel__abas">
             <span className="painel__aba painel__aba--ativa">visão geral</span>
             <span className="painel__aba">lançamentos</span>
@@ -32,7 +51,7 @@ export default function PainelExemplo() {
         <div className="painel__corpo">
           <div className="painel__card painel__resumo">
             <div>
-              <div className="painel__legenda">Boa tarde Helena!</div>
+              <div className="painel__legenda">Boa tarde Kauane!</div>
               <div className="painel__resumo-titulo">Resumo de outubro</div>
             </div>
             <div className="painel__totais">
@@ -67,15 +86,8 @@ export default function PainelExemplo() {
         </div>
       </div>
 
-      <div className="painel__ultimos">
-        <div className="painel__ultimos-titulo">Últimos lançamentos</div>
-        {lancamentos.map(({ nome, valor, tipo }) => (
-          <div key={nome} className="lancamento">
-            <span className="lancamento__nome">{nome}</span>
-            <span className={`lancamento__valor lancamento__valor--${tipo}`}>{valor}</span>
-          </div>
-        ))}
-      </div>
+      <CartaoLancamentos titulo="Últimas Entradas / Ganhos" itens={entradas} tipo="entrada" />
+      <CartaoLancamentos titulo="Últimas Saídas / Gastos" itens={saidas} tipo="saida" />
     </div>
   );
 }

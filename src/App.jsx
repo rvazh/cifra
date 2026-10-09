@@ -15,6 +15,8 @@ export default function App() {
           <Route path="/planos" element={<EmBreve titulo="Planos" />} />
           <Route path="/blog" element={<EmBreve titulo="Blog" />} />
           <Route path="/entrar" element={<EmBreve titulo="Entrar" />} />
+          <Route path="/privacidade" element={<EmBreve titulo="Política de Privacidade" />} />
+          <Route path="/termos" element={<EmBreve titulo="Termos de Uso" />} />
           <Route path="*" element={<EmBreve titulo="Página não encontrada" />} />
         </Routes>
       </main>
