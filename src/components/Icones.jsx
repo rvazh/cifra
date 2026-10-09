@@ -202,3 +202,154 @@ export const IconeDinheiro = (p) => (
     <circle cx="12" cy="12" r="2.5" />
   </Svg>
 );
+
+// ===== Ícones do painel =====
+export const IconeCasa = (p) => (
+  <Svg {...p}>
+    <path d="M3 11l9-7 9 7" />
+    <path d="M5 10v10h14V10" />
+  </Svg>
+);
+
+export const IconeLista = (p) => (
+  <Svg {...p}>
+    <path d="M8 6h13" />
+    <path d="M8 12h13" />
+    <path d="M8 18h13" />
+    <circle cx="4" cy="6" r="1" />
+    <circle cx="4" cy="12" r="1" />
+    <circle cx="4" cy="18" r="1" />
+  </Svg>
+);
+
+export const IconePlanejamento = (p) => (
+  <Svg {...p}>
+    <path d="M9 11l3 3 8-8" />
+    <path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9" />
+  </Svg>
+);
+
+export const IconeConfig = (p) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 2v3" />
+    <path d="M12 19v3" />
+    <path d="M4.9 4.9l2.1 2.1" />
+    <path d="M17 17l2.1 2.1" />
+    <path d="M2 12h3" />
+    <path d="M19 12h3" />
+    <path d="M4.9 19.1L7 17" />
+    <path d="M17 7l2.1-2.1" />
+  </Svg>
+);
+
+export const IconeSair = (p) => (
+  <Svg {...p}>
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+    <path d="M16 17l5-5-5-5" />
+    <path d="M21 12H9" />
+  </Svg>
+);
+
+export const IconeBusca = (p) => (
+  <Svg {...p}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="M21 21l-4.3-4.3" />
+  </Svg>
+);
+
+export const IconeCima = (p) => (
+  <Svg {...p}>
+    <path d="M12 19V5" />
+    <path d="M5 12l7-7 7 7" />
+  </Svg>
+);
+
+export const IconeBaixo = (p) => (
+  <Svg {...p}>
+    <path d="M12 5v14" />
+    <path d="M19 12l-7 7-7-7" />
+  </Svg>
+);
+
+// Olho (mostrar/esconder valores). Com "fechado", aparece riscado.
+export const IconeOlho = ({ fechado, ...p }) => (
+  <Svg {...p}>
+    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+    <circle cx="12" cy="12" r="3" />
+    {fechado && <path d="M3 3l18 18" />}
+  </Svg>
+);
+
+export const IconeUsuario = (p) => (
+  <Svg {...p}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21a8 8 0 0 1 16 0" />
+  </Svg>
+);
+
+export const IconeEtiqueta = (p) => (
+  <Svg {...p}>
+    <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
+    <circle cx="7.5" cy="7.5" r="1.5" />
+  </Svg>
+);
+
+export const IconeBaixar = (p) => (
+  <Svg {...p}>
+    <path d="M12 3v12" />
+    <path d="M7 10l5 5 5-5" />
+    <path d="M5 21h14" />
+  </Svg>
+);
+
+export const IconeEnviar = (p) => (
+  <Svg {...p}>
+    <path d="M12 21V9" />
+    <path d="M7 14l5-5 5 5" />
+    <path d="M5 3h14" />
+  </Svg>
+);
+
+export const IconeLixeira = (p) => (
+  <Svg {...p}>
+    <path d="M3 6h18" />
+    <path d="M8 6V4h8v2" />
+    <path d="M6 6l1 15h10l1-15" />
+  </Svg>
+);
+
+export const IconeEscudo = (p) => (
+  <Svg {...p}>
+    <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z" />
+    <path d="M9 12l2 2 4-4" />
+  </Svg>
+);
+
+export const IconeInfo = (p) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 11v6" />
+    <path d="M12 7.5v.5" />
+  </Svg>
+);
+
+export const IconeEstrela = (p) => (
+  <Svg {...p}>
+    <path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z" />
+  </Svg>
+);
+
+export const IconeDireita = (p) => (
+  <Svg {...p}>
+    <path d="M9 6l6 6-6 6" />
+  </Svg>
+);
+
+export const IconeLivro = (p) => (
+  <Svg {...p}>
+    <path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z" />
+    <path d="M4 21V5" />
+    <path d="M9 7h6" />
+  </Svg>
+);

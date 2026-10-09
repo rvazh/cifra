@@ -8,14 +8,27 @@ import Planos from './pages/Planos.jsx';
 import QuemSomos from './pages/QuemSomos.jsx';
 import Privacidade from './pages/Privacidade.jsx';
 import Termos from './pages/Termos.jsx';
+import Painel from './pages/Painel.jsx';
+import Lancamentos from './pages/Lancamentos.jsx';
+import Calendario from './pages/Calendario.jsx';
+import Contas from './pages/Contas.jsx';
+import Relatorios from './pages/Relatorios.jsx';
+import Objetivos from './pages/Objetivos.jsx';
+import Configuracoes from './pages/Configuracoes.jsx';
+import Cursos from './pages/Cursos.jsx';
 import EmBreve from './pages/EmBreve.jsx';
 
 // Páginas que aparecem sem o cabeçalho e o rodapé do site
 const telasSemMenu = ['/entrar', '/privacidade', '/termos'];
 
+// O painel (e tudo dentro de /painel) também aparece sem o menu do site
+function semMenu(caminho) {
+  return telasSemMenu.includes(caminho) || caminho.startsWith('/painel');
+}
+
 export default function App() {
   const { pathname } = useLocation();
-  const mostrarMenu = !telasSemMenu.includes(pathname);
+  const mostrarMenu = !semMenu(pathname);
 
   // Ao trocar de página, volta para o topo
   useEffect(() => {
@@ -32,7 +45,18 @@ export default function App() {
           <Route path="/planos" element={<Planos />} />
           <Route path="/blog" element={<EmBreve titulo="Blog" />} />
           <Route path="/entrar" element={<Entrar />} />
-          <Route path="/painel" element={<EmBreve titulo="Painel" />} />
+          <Route path="/painel" element={<Painel />} />
+          <Route path="/painel/lancamentos" element={<Lancamentos />} />
+          <Route path="/painel/calendario" element={<Calendario />} />
+          <Route path="/painel/contas" element={<Contas />} />
+          <Route path="/painel/relatorios" element={<Relatorios />} />
+          <Route path="/painel/objetivos" element={<Objetivos />} />
+          <Route path="/painel/configuracoes" element={<Configuracoes />} />
+          <Route path="/painel/cursos" element={<Cursos />} />
+          <Route
+            path="/painel/*"
+            element={<EmBreve titulo="Em construção" voltarPara="/painel" voltarTexto="Voltar para o painel" />}
+          />
           <Route path="/cadastro" element={<EmBreve titulo="Criar conta" />} />
           <Route path="/recuperar-senha" element={<EmBreve titulo="Recuperar senha" />} />
           <Route path="/privacidade" element={<Privacidade />} />

@@ -40,6 +40,12 @@ export default function Entrar() {
   function enviar(evento) {
     evento.preventDefault(); // impede a página de recarregar
     // Por enquanto não há validação: qualquer usuário e senha entram.
+    // O nome digitado fica salvo só neste aparelho, para o painel dar "Boa tarde, fulano!"
+    try {
+      localStorage.setItem('cifra:usuario', usuario.trim());
+    } catch {
+      /* sem acesso ao armazenamento: tudo bem */
+    }
     navegar('/painel');
   }
 

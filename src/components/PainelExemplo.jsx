@@ -1,12 +1,5 @@
-import { IconeBanco, IconeCarteira, IconeDinheiro } from './Icones.jsx';
+import imagemPainel from '../assets/painel-principal.webp';
 import './PainelExemplo.css';
-
-// Dados de exemplo só para ilustrar o app na página inicial
-const contas = [
-  { nome: 'Conta corrente', valor: 'R$ 3.210,45', Icone: IconeBanco, fundo: '#fbebd2', cor: '#8c5a10' },
-  { nome: 'Poupança', valor: 'R$ 8.640,00', Icone: IconeCarteira, fundo: '#efebe4', cor: '#141414' },
-  { nome: 'Carteira', valor: 'R$ 500,45', Icone: IconeDinheiro, fundo: '#f6e3c6', cor: '#6b4410' },
-];
 
 // Dois cartões flutuantes: um de entradas (ganhos) e um de saídas (gastos)
 const entradas = [
@@ -37,53 +30,21 @@ function CartaoLancamentos({ titulo, itens, tipo }) {
 
 export default function PainelExemplo() {
   return (
-    <div className="painel" aria-label="Exemplo da tela da CIFRA" role="img">
+    <div className="painel">
+      {/* Imagem real do Painel principal, dentro de uma "janela" */}
       <div className="painel__janela">
-        <div className="painel__topo">
-          <span className="painel__marca">CIFRA</span>
-          <span className="painel__abas">
-            <span className="painel__aba painel__aba--ativa">visão geral</span>
-            <span className="painel__aba">lançamentos</span>
-            <span className="painel__aba">relatórios</span>
-          </span>
+        <div className="painel__barra" aria-hidden="true">
+          <span />
+          <span />
+          <span />
         </div>
-
-        <div className="painel__corpo">
-          <div className="painel__card painel__resumo">
-            <div>
-              <div className="painel__legenda">Boa tarde Kauane!</div>
-              <div className="painel__resumo-titulo">Resumo de outubro</div>
-            </div>
-            <div className="painel__totais">
-              <div>
-                <div className="painel__legenda painel__legenda--p">Receita do mês</div>
-                <div className="painel__valor painel__valor--entrada">R$ 6.420,00</div>
-              </div>
-              <div>
-                <div className="painel__legenda painel__legenda--p">Despesa do mês</div>
-                <div className="painel__valor painel__valor--saida">R$ 4.180,35</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="painel__card painel__contas">
-            <div className="painel__saldo">
-              <span className="painel__legenda">Saldo geral</span>
-              <span className="painel__saldo-valor">R$ 12.350,90</span>
-            </div>
-            <div className="painel__divisor" />
-            <div className="painel__subtitulo">Minhas contas</div>
-            {contas.map(({ nome, valor, Icone, fundo, cor }) => (
-              <div key={nome} className="conta">
-                <span className="conta__icone" style={{ background: fundo }}>
-                  <Icone tamanho={18} cor={cor} />
-                </span>
-                <span className="conta__nome">{nome}</span>
-                <span className="conta__valor">{valor}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <img
+          className="painel__imagem"
+          src={imagemPainel}
+          alt="Painel principal da CIFRA com saldo, receitas, despesas, gráfico e contas a pagar"
+          width="1600"
+          height="1000"
+        />
       </div>
 
       <CartaoLancamentos titulo="Últimas Entradas / Ganhos" itens={entradas} tipo="entrada" />

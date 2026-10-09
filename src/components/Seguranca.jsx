@@ -7,8 +7,8 @@ import {
   IconePizza,
   IconeCadeado,
   IconeCartao,
-  IconeSino,
 } from './Icones.jsx';
+import imagemPainel from '../assets/painel-principal.webp';
 import './Seguranca.css';
 
 // Lista com ✓ (o último item fica em destaque)
@@ -20,20 +20,6 @@ const vantagens = [
 ];
 const vantagemDestaque =
   'Segurança, planejamento e direção. Tudo o que você precisa em um só lugar';
-
-// Dados de exemplo do painel
-const abas = ['visão geral', 'lançamentos', 'relatórios', 'Calendário'];
-
-const contas = [
-  { nome: 'NuBank', valor: 'R$ 2.705,39', cor: '#fbebd2' },
-  { nome: 'Inter', valor: 'R$ 300,01', cor: '#efebe4' },
-  { nome: 'Santander', valor: 'R$ 1.200,50', cor: '#f6e3c6' },
-];
-
-const cartoes = [
-  { nome: 'Cartão NuBank', fatura: 'R$ 1.215,60' },
-  { nome: 'Cartão Inter', fatura: 'R$ 631,60' },
-];
 
 export default function Seguranca() {
   return (
@@ -91,74 +77,20 @@ export default function Seguranca() {
               <IconeCartao tamanho={56} cor="#8c5a10" espessura={1.8} />
             </span>
 
-            <div className="painel-pc" role="img" aria-label="Exemplo do painel da CIFRA no computador">
-              <div className="painel-pc__topo">
-                <span className="painel-pc__marca">CIFRA</span>
-                <span className="painel-pc__abas">
-                  {abas.map((aba, i) => (
-                    <span key={aba} className={i === 0 ? 'painel-pc__aba painel-pc__aba--ativa' : 'painel-pc__aba'}>
-                      {aba}
-                    </span>
-                  ))}
-                </span>
-                <IconeSino tamanho={16} cor="#cfc6b6" />
+            <div className="painel-pc">
+              <div className="painel-pc__barra" aria-hidden="true">
+                <span />
+                <span />
+                <span />
               </div>
-
-              <div className="painel-pc__corpo">
-                <div className="painel-pc__card painel-pc__resumo">
-                  <div>
-                    <div className="painel-pc__legenda">Boa tarde,</div>
-                    <div className="painel-pc__nome">Ryan</div>
-                  </div>
-                  <div className="painel-pc__totais">
-                    <div>
-                      <div className="painel-pc__legenda">Receita mensal</div>
-                      <div className="painel-pc__valor painel-pc__valor--entrada">R$ 6.420,00</div>
-                    </div>
-                    <div>
-                      <div className="painel-pc__legenda">Despesa mensal</div>
-                      <div className="painel-pc__valor painel-pc__valor--saida">R$ 4.180,35</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="painel-pc__grade">
-                  <div className="painel-pc__card painel-pc__coluna">
-                    <div className="painel-pc__total painel-pc__total--dourado">
-                      <div className="painel-pc__legenda">Saldo geral</div>
-                      <div className="painel-pc__total-valor">R$ 4.205,90</div>
-                    </div>
-                    <div className="painel-pc__subtitulo">Minhas contas</div>
-                    {contas.map((conta) => (
-                      <div key={conta.nome} className="painel-pc__conta">
-                        <span className="painel-pc__bolinha" style={{ background: conta.cor }} />
-                        <span className="painel-pc__conta-nome">{conta.nome}</span>
-                        <span className="painel-pc__conta-valor">{conta.valor}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="painel-pc__card painel-pc__coluna">
-                    <div className="painel-pc__total painel-pc__total--vermelho">
-                      <div className="painel-pc__legenda">Faturas de outubro</div>
-                      <div className="painel-pc__total-valor painel-pc__valor--saida">R$ 1.847,20</div>
-                    </div>
-                    <div className="painel-pc__subtitulo">Meus cartões</div>
-                    {cartoes.map((cartao) => (
-                      <div key={cartao.nome} className="painel-pc__cartao">
-                        <div className="painel-pc__cartao-topo">
-                          <span className="painel-pc__cartao-nome">{cartao.nome}</span>
-                          <span className="painel-pc__ver">Ver fatura</span>
-                        </div>
-                        <div className="painel-pc__cartao-linha">
-                          <span>Fatura atual</span>
-                          <strong>{cartao.fatura}</strong>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <img
+                className="painel-pc__imagem"
+                src={imagemPainel}
+                alt="Painel principal da CIFRA no computador"
+                width="1600"
+                height="1000"
+                loading="lazy"
+              />
             </div>
           </div>
         </div>

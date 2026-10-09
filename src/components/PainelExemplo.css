@@ -14,147 +14,30 @@
   overflow: hidden;
 }
 
-.painel__topo {
+/* Barrinha de "janela" em cima da imagem */
+.painel__barra {
+  display: flex;
+  gap: 6px;
+  padding: 10px 14px;
   background: var(--preto);
-  padding: 14px 22px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  color: var(--branco);
 }
 
-.painel__marca {
-  font-weight: 800;
-  font-size: 18px;
+.painel__barra span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #3a342a;
 }
 
-.painel__abas {
-  display: flex;
-  gap: 18px;
-  font-size: 13px;
-  font-weight: 600;
+.painel__barra span:first-child {
+  background: var(--dourado);
 }
 
-.painel__aba {
-  opacity: 0.8;
-}
-
-.painel__aba--ativa {
-  opacity: 1;
-  border-bottom: 2px solid var(--dourado);
-  color: var(--dourado);
-  padding-bottom: 2px;
-}
-
-.painel__corpo {
-  padding: 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  background: var(--fundo-painel);
-}
-
-.painel__card {
-  background: var(--branco);
-  border-radius: 14px;
-  padding: 18px 20px;
-  border: 1px solid var(--borda);
-}
-
-.painel__resumo {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.painel__legenda {
-  font-size: 13px;
-  color: var(--cinza);
-}
-
-.painel__legenda--p {
-  font-size: 12px;
-}
-
-.painel__resumo-titulo {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.painel__totais {
-  display: flex;
-  gap: 24px;
-}
-
-.painel__valor {
-  font-size: 17px;
-  font-weight: 700;
-}
-
-.painel__valor--entrada {
-  color: var(--positivo);
-}
-
-.painel__valor--saida {
-  color: var(--negativo);
-}
-
-.painel__contas {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.painel__saldo {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-
-.painel__saldo-valor {
-  font-size: 22px;
-  font-weight: 800;
-}
-
-.painel__divisor {
-  height: 1px;
-  background: var(--borda);
-}
-
-.painel__subtitulo {
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.conta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.conta__icone {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.conta__nome {
-  flex: 1;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.conta__valor {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--texto);
+/* Imagem real do Painel principal */
+.painel__imagem {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 /* Cartão flutuante "Últimos lançamentos" */

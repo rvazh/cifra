@@ -1,4 +1,4 @@
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import Logo from './Logo.jsx';
 import './Header.css';
 
@@ -9,15 +9,9 @@ const links = [
   { para: '/blog', texto: 'Blog' },
 ];
 
-// Páginas em que o cabeçalho fica com fundo dourado
-const paginasDouradas = ['/quem-somos'];
-
 export default function Header() {
-  const { pathname } = useLocation();
-  const dourado = paginasDouradas.includes(pathname);
-
   return (
-    <div className={dourado ? 'header-fundo header-fundo--dourado' : 'header-fundo'}>
+    <div className="header-fundo">
       <header className="header container">
         <Link to="/" aria-label="CIFRA — página inicial">
           <Logo nome="cifra" />

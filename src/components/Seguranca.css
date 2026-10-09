@@ -184,189 +184,35 @@
   overflow: hidden;
 }
 
-.painel-pc__topo {
+.painel-pc__barra {
+  display: flex;
+  gap: 6px;
+  padding: 10px 14px;
   background: var(--preto);
-  padding: 12px 20px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 22px;
 }
 
-.painel-pc__marca {
-  font-weight: 800;
-  font-size: 17px;
-  color: var(--dourado);
-}
-
-.painel-pc__abas {
-  flex: 1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.painel-pc__aba {
-  color: #cfc6b6;
-}
-
-.painel-pc__aba--ativa {
-  color: var(--dourado);
-  border-bottom: 2px solid var(--dourado);
-  padding-bottom: 2px;
-}
-
-.painel-pc__corpo {
-  padding: 18px;
-  background: var(--fundo-painel);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.painel-pc__card {
-  background: var(--branco);
-  border: 1px solid var(--borda);
-  border-radius: 14px;
-}
-
-.painel-pc__resumo {
-  padding: 16px 18px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.painel-pc__legenda {
-  font-size: 11px;
-  color: var(--cinza);
-}
-
-.painel-pc__nome {
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.painel-pc__totais {
-  display: flex;
-  gap: 22px;
-}
-
-.painel-pc__valor {
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.painel-pc__valor--entrada {
-  color: var(--positivo);
-}
-
-.painel-pc__valor--saida {
-  color: var(--negativo);
-}
-
-.painel-pc__grade {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.painel-pc__coluna {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.painel-pc__total {
-  padding-left: 10px;
-  border-left: 3px solid var(--dourado);
-}
-
-.painel-pc__total--vermelho {
-  border-left-color: var(--negativo);
-}
-
-.painel-pc__total-valor {
-  font-size: 17px;
-  font-weight: 800;
-}
-
-.painel-pc__subtitulo {
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.painel-pc__conta {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 12px;
-}
-
-.painel-pc__bolinha {
-  width: 26px;
-  height: 26px;
+.painel-pc__barra span {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
+  background: #3a342a;
 }
 
-.painel-pc__conta-nome {
-  flex: 1;
-  font-weight: 600;
+.painel-pc__barra span:first-child {
+  background: var(--dourado);
 }
 
-.painel-pc__conta-valor {
-  font-weight: 700;
+.painel-pc__imagem {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
-.painel-pc__cartao {
-  padding: 10px;
-  border-radius: 10px;
-  background: var(--fundo-painel);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.painel-pc__cartao-topo,
-.painel-pc__cartao-linha {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11px;
-}
-
-.painel-pc__cartao-linha span {
-  color: var(--cinza);
-}
-
-.painel-pc__cartao-nome {
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.painel-pc__ver {
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: var(--preto);
-  color: var(--dourado);
-  font-size: 10px;
-  font-weight: 700;
-}
-
-/* Celular: painel em uma coluna e quadrados menores */
 @media (max-width: 600px) {
   .seg__visual {
     padding: 24px 0;
   }
 
-  .painel-pc__grade {
-    grid-template-columns: 1fr;
-  }
 
   .seg__selo--grafico {
     top: -24px;
