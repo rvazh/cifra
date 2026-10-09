@@ -37,7 +37,7 @@ function CartaoLancamentos({ titulo, itens, tipo }) {
 
 export default function PainelExemplo() {
   return (
-    <div className="painel" aria-label="Exemplo da tela do CIFRA" role="img">
+    <div className="painel" aria-label="Exemplo da tela da CIFRA" role="img">
       <div className="painel__janela">
         <div className="painel__topo">
           <span className="painel__marca">CIFRA</span>

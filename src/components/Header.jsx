@@ -1,4 +1,4 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import Logo from './Logo.jsx';
 import './Header.css';
 
@@ -9,25 +9,33 @@ const links = [
   { para: '/blog', texto: 'Blog' },
 ];
 
+// Páginas em que o cabeçalho fica com fundo dourado
+const paginasDouradas = ['/quem-somos'];
+
 export default function Header() {
+  const { pathname } = useLocation();
+  const dourado = paginasDouradas.includes(pathname);
+
   return (
-    <header className="header container">
-      <Link to="/" aria-label="CIFRA — página inicial">
-        <Logo />
-      </Link>
+    <div className={dourado ? 'header-fundo header-fundo--dourado' : 'header-fundo'}>
+      <header className="header container">
+        <Link to="/" aria-label="CIFRA — página inicial">
+          <Logo nome="cifra" />
+        </Link>
 
-      <nav aria-label="Principal" className="header__nav">
-        {links.map((link) => (
-          // NavLink adiciona a classe "active" (e aria-current) no link da página atual
-          <NavLink key={link.para} to={link.para} end className="header__link">
-            {link.texto}
-          </NavLink>
-        ))}
-      </nav>
+        <nav aria-label="Principal" className="header__nav">
+          {links.map((link) => (
+            // NavLink adiciona a classe "active" (e aria-current) no link da página atual
+            <NavLink key={link.para} to={link.para} end className="header__link">
+              {link.texto}
+            </NavLink>
+          ))}
+        </nav>
 
-      <Link to="/entrar" className="header__entrar">
-        Entrar
-      </Link>
-    </header>
+        <Link to="/entrar" className="header__entrar">
+          Entrar
+        </Link>
+      </header>
+    </div>
   );
 }

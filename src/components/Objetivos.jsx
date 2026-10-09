@@ -38,7 +38,7 @@ const objetivos = [
     Icone: IconeBackup,
     titulo: 'Subir o nível da sua gestão',
     texto:
-      'Se você já administra o seu financeiro, o CIFRA pode te ajudar a chegar a outro nível de prosperidade e gestão.',
+      'Se você já administra o seu financeiro, a CIFRA pode te ajudar a chegar a outro nível de prosperidade e gestão.',
   },
   {
     Icone: IconeCadeado,

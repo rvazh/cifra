@@ -79,7 +79,7 @@ export default function Seguranca() {
             </div>
           </div>
 
-          {/* ===== Painel do CIFRA no computador ===== */}
+          {/* ===== Painel da CIFRA no computador ===== */}
           <div className="seg__visual">
             <span className="seg__selo seg__selo--grafico" aria-hidden="true">
               <IconePizza tamanho={28} cor="#141414" />
@@ -91,7 +91,7 @@ export default function Seguranca() {
               <IconeCartao tamanho={56} cor="#8c5a10" espessura={1.8} />
             </span>
 
-            <div className="painel-pc" role="img" aria-label="Exemplo do painel do CIFRA no computador">
+            <div className="painel-pc" role="img" aria-label="Exemplo do painel da CIFRA no computador">
               <div className="painel-pc__topo">
                 <span className="painel-pc__marca">CIFRA</span>
                 <span className="painel-pc__abas">

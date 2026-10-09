@@ -56,3 +56,16 @@
     font-size: 16px;
   }
 }
+
+/* ===== Cabeçalho dourado (ex.: página Quem somos) ===== */
+.header-fundo--dourado {
+  background: var(--dourado);
+}
+
+.header-fundo--dourado .header__link.active {
+  box-shadow: inset 0 -3px 0 var(--preto); /* sublinhado preto no fundo dourado */
+}
+
+.header-fundo--dourado .header__link:hover {
+  color: var(--preto);
+}

@@ -10,7 +10,7 @@ const contas = [
 
 export default function CelularInicio() {
   return (
-    <div className="celular" role="img" aria-label="Exemplo da tela inicial do CIFRA no celular">
+    <div className="celular" role="img" aria-label="Exemplo da tela inicial da CIFRA no celular">
       <div className="celular__tela">
         <div className="celular__topo">
           <span className="celular__avatar">J</span>

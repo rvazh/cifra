@@ -5,36 +5,37 @@ import './Perguntas.css';
 
 const perguntas = [
   {
-    pergunta: 'O que é o CIFRA?',
+    pergunta: 'O que é a CIFRA?',
     resposta:
-      'O CIFRA é um app de gestão financeira pessoal. Com ele você registra receitas e despesas, acompanha o saldo das suas contas e cartões e entende para onde vai o seu dinheiro.',
+      'A CIFRA é um app de gestão financeira pessoal. Com ela você registra receitas e despesas, acompanha o saldo das suas contas e cartões e entende para onde vai o seu dinheiro.',
   },
   {
-    pergunta: 'Posso usar o CIFRA no celular e no computador?',
+    pergunta: 'Posso usar a CIFRA no celular e no computador?',
     resposta:
-      'Sim. O CIFRA funciona direto no navegador, tanto no celular quanto no computador, sem precisar instalar nada. O app para celular está a caminho.',
+      'Sim. A CIFRA funciona direto no navegador, tanto no celular quanto no computador, sem precisar instalar nada. O app para celular está a caminho.',
   },
   {
     pergunta: 'Meus dados estão seguros?',
     resposta:
-      'Seus dados ficam guardados no próprio aparelho que você usa. Por isso, recomendamos fazer backups de vez em quando para não perder o seu histórico.',
+      'Seus dados ficam guardados no próprio aparelho que você usa e não são enviados para servidores da CIFRA. Por isso, se você limpar os dados do navegador ou trocar de aparelho, o histórico pode ser perdido.',
   },
   {
-    pergunta: 'O CIFRA coleta dados financeiros para vender?',
+    pergunta: 'A CIFRA coleta dados financeiros para vender?',
     resposta:
       'Não. Suas informações financeiras são suas e não são vendidas nem compartilhadas com ninguém.',
   },
   {
-    pergunta: 'Quanto custa o CIFRA?',
-    resposta: 'Durante a versão de teste, o CIFRA é gratuito e todos os recursos ficam liberados.',
+    pergunta: 'Quanto custa a CIFRA?',
+    resposta:
+      'Durante a versão de teste, a CIFRA é gratuita e todos os recursos ficam liberados. Depois, você poderá continuar no Plano Gratuito ou escolher um plano pago na página Planos.',
   },
   {
-    pergunta: 'O CIFRA se conecta com o meu banco?',
+    pergunta: 'A CIFRA se conecta com o meu banco?',
     resposta:
       'Não. Você registra os seus lançamentos no app, sem precisar informar senhas ou dados de acesso do seu banco.',
   },
   {
-    pergunta: 'Como entro em contato com a equipe do CIFRA?',
+    pergunta: 'Como entro em contato com a equipe da CIFRA?',
     resposta: 'Você pode falar com a gente pela página Quem somos. Respondemos o mais rápido possível.',
   },
 ];
