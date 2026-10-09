@@ -4,7 +4,7 @@ import MenuLateral from '../components/MenuLateral.jsx';
 import { IconeMais } from '../components/Icones.jsx';
 import { reais } from '../components/Graficos.jsx';
 import { nomesDasContas } from '../dados/contas.js';
-import { carregarPreferencias, valoresEscondidos } from '../dados/preferencias.js';
+import { carregarPreferencias } from '../dados/preferencias.js';
 import {
   categoria,
   carregar,
@@ -23,11 +23,6 @@ import './Calendario.css';
 const DIAS_DA_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 const MESES_CURTOS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
-// Valor curto para caber no quadradinho do dia: "−1.400" ou "+5.200"
-function valorCurto(valor) {
-  if (valoresEscondidos()) return '••••';
-  return `${valor >= 0 ? '+' : '−'}${Math.round(Math.abs(valor)).toLocaleString('pt-BR')}`;
-}
 
 function valorComSinal(valor) {
   return `${valor >= 0 ? '+ ' : '− '}${reais(Math.abs(valor))}`;
@@ -238,11 +233,10 @@ export default function Calendario() {
             <div className="cal-grade__dias">
               {quadros.map((data, i) => {
                 if (!data) return <span key={`vazio-${i}`} className="cal-quadro cal-quadro--vazio" />;
-                const itens = porDia[data] || [];
                 const classes = ['cal-quadro'];
                 if (data === hoje) classes.push('cal-quadro--hoje');
                 if (data === diaEscolhido) classes.push('cal-quadro--escolhido');
-                if (itens.some((l) => !l.pago && l.data < hoje)) classes.push('cal-quadro--atrasado');
+                // Os dias ficam limpos: o que acontece em cada dia aparece no painel ao lado
                 return (
                   <button
                     key={data}
@@ -250,55 +244,12 @@ export default function Calendario() {
                     className={classes.join(' ')}
                     onClick={() => escolherDia(data)}
                     aria-pressed={data === diaEscolhido}
-                    aria-label={`${diaPorExtenso(data)}: ${itens.length} ${itens.length === 1 ? 'lançamento' : 'lançamentos'}`}
+                    aria-label={diaPorExtenso(data)}
                   >
                     <span className="cal-quadro__numero">{Number(data.slice(8))}</span>
-
-                    {/* Computador: etiquetas com nome e valor */}
-                    <span className="cal-quadro__itens">
-                      {itens.slice(0, 2).map((l) => (
-                        <span
-                          key={l.id}
-                          className={`cal-etiqueta cal-etiqueta--${situacao(l, hoje).classe}`}
-                          style={{ '--cor': categoria(l.categoria).cor }}
-                        >
-                          <span className="cal-etiqueta__nome">{l.descricao}</span>
-                          <span className={l.valor >= 0 ? 'cal-etiqueta__valor valor--entrada' : 'cal-etiqueta__valor'}>
-                            {valorCurto(l.valor)}
-                          </span>
-                        </span>
-                      ))}
-                      {itens.length > 2 && <span className="cal-quadro__mais">+ {itens.length - 2} mais</span>}
-                    </span>
-
-                    {/* Celular: só bolinhas coloridas */}
-                    <span className="cal-quadro__pontos">
-                      {itens.slice(0, 4).map((l) => (
-                        <span
-                          key={l.id}
-                          className={`cal-ponto cal-ponto--${situacao(l, hoje).classe}`}
-                          style={{ '--cor': categoria(l.categoria).cor }}
-                        />
-                      ))}
-                    </span>
                   </button>
                 );
               })}
-            </div>
-
-            <div className="cal-legenda">
-              <span className="cal-legenda__item">
-                <span className="cal-legenda__amostra cal-legenda__amostra--pago" /> Pago / recebido
-              </span>
-              <span className="cal-legenda__item">
-                <span className="cal-legenda__amostra cal-legenda__amostra--pendente" /> A pagar
-              </span>
-              <span className="cal-legenda__item">
-                <span className="cal-legenda__amostra cal-legenda__amostra--previsto" /> Previsto (repete todo mês)
-              </span>
-              <span className="cal-legenda__item">
-                <span className="cal-legenda__amostra cal-legenda__amostra--atrasado" /> Atrasado
-              </span>
             </div>
           </section>
 

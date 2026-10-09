@@ -29,69 +29,169 @@
 
 
 
-/* ===== Lançamento rápido ===== */
-.rapido {
+/* ===== Novo lançamento (manual) ===== */
+.novo {
   padding: 22px 24px;
   border-radius: 22px;
   background: var(--preto);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
-.rapido__topo {
+.novo__topo {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 6px 16px;
+  gap: 10px 16px;
 }
 
-.rapido__titulo {
+.novo__titulo {
   font-size: 16px;
   font-weight: 800;
   color: var(--creme);
 }
 
-.rapido__dica {
+.novo__tipo {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: #1f1c18;
+  border: 1.5px solid #3a342a;
+}
+
+.novo__tipo-botao {
+  min-height: 34px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 9px;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: #bdb4a4;
+  cursor: pointer;
+}
+
+.novo__tipo-botao--despesa {
+  background: #d9544a;
+  color: var(--branco);
+}
+
+.novo__tipo-botao--receita {
+  background: #2e9d5b;
+  color: var(--branco);
+}
+
+.novo__grade {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.novo__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   font-size: 13px;
+  font-weight: 700;
   color: #bdb4a4;
 }
 
-.rapido__linha {
-  display: flex;
-  gap: 10px;
-}
-
-.rapido__campo {
-  flex: 1;
-  min-width: 0;
-  height: 54px;
-  padding: 0 18px;
-  border-radius: 14px;
+.novo__campo input,
+.novo__campo select {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border-radius: 12px;
   border: 1.5px solid #3a342a;
   background: #1f1c18;
   color: var(--creme);
   font: inherit;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 500;
+  color-scheme: dark; /* calendário e listas no tema escuro */
 }
 
-.rapido__campo::placeholder {
+.novo__campo input::placeholder {
   color: #8f877a;
 }
 
-.rapido__campo:focus {
+.novo__campo input:focus,
+.novo__campo select:focus {
   outline: none;
   border-color: var(--dourado);
 }
 
-.rapido__botao {
+.novo__rodape {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+}
+
+.novo__check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--creme);
+  cursor: pointer;
+}
+
+.novo__check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--dourado);
+}
+
+.novo__parcelas {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 22px;
+  font-size: 14px;
+  color: #bdb4a4;
+}
+
+.novo__parcelas input {
+  width: 72px;
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1.5px solid #3a342a;
+  background: #1f1c18;
+  color: var(--creme);
+  font: inherit;
+  font-size: 15px;
+  color-scheme: dark;
+}
+
+.novo__parcelas input:focus {
+  outline: none;
+  border-color: var(--dourado);
+}
+
+.novo__resumo {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #2e2a24;
+  color: var(--dourado);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.novo__botao {
+  margin-left: auto;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 24px;
   border: none;
-  border-radius: 14px;
+  border-radius: 12px;
   background: var(--dourado);
   color: var(--preto);
   font: inherit;
@@ -100,56 +200,33 @@
   cursor: pointer;
 }
 
-.rapido__botao:hover {
+.novo__botao:hover {
   filter: brightness(1.05);
 }
 
-.rapido__sugestoes,
-.rapido__previa {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.rapido__sugestao {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 999px;
-  background: #2e2a24;
-  color: var(--rodape-texto);
-  font: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.rapido__sugestao:hover {
-  background: #3a342a;
-}
-
-.previa {
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: #2e2a24;
-  color: var(--creme);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.previa--receita {
-  background: #2e9d5b;
-  color: var(--branco);
-}
-
-.previa--despesa {
-  background: #d9544a;
-  color: var(--branco);
-}
-
-.rapido__erro {
+.novo__erro {
   font-size: 13px;
   font-weight: 600;
   color: #f08a80;
+}
+
+.novo__ok {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6fd39a;
+}
+
+.detalhe__excluir-todas {
+  align-self: center;
+  margin-top: 4px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--negativo);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 /* ===== Atalhos de categoria ===== */
@@ -777,21 +854,27 @@
   }
 }
 
+@media (max-width: 1100px) {
+  .novo__grade {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .novo__campo--titulo {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (max-width: 560px) {
-  .rapido {
+  .novo {
     padding: 18px;
   }
 
-  .rapido__linha {
-    flex-direction: column;
+  .novo__grade {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .rapido__campo {
-    flex: none;
-  }
-
-  .rapido__botao {
-    min-height: 50px;
+  .novo__botao {
+    width: 100%;
     justify-content: center;
   }
 

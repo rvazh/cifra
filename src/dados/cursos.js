@@ -19,13 +19,13 @@ export const PRIMEIROS_PASSOS = {
     {
       titulo: 'Registre o que entra e o que sai',
       texto:
-        'No lançamento rápido, escreva do seu jeito, como "Gastei R$ 45 no almoço com Nubank" ou "Recebi R$ 500 de freela". A CIFRA entende o valor, a categoria e a conta. Quanto mais você registra, mais certos ficam os números.',
+        'Em Lançamentos, preencha o título, o valor, se é despesa ou ganho, a data e a conta. Comprou parcelado? Marque "Parcelado" e diga em quantas vezes: a CIFRA cria uma parcela em cada mês. Quanto mais você registra, mais certos ficam os números.',
       link: { para: '/painel/lancamentos', texto: 'Ir para Lançamentos' },
     },
     {
       titulo: 'Marque as contas que vão vencer',
       texto:
-        'Aluguel, internet, fatura do cartão: lance com a data do vencimento. O que tem data futura fica como "a pagar" no Calendário. Para contas fixas, marque "Repete todo mês" e elas aparecem sozinhas nos próximos meses.',
+        'Aluguel, internet, fatura do cartão: lance com a data do vencimento. O que tem data futura fica como "a pagar" no Calendário. Para contas fixas, abra o lançamento, toque em Editar e marque "Repete todo mês": elas aparecem sozinhas nos próximos meses.',
       link: { para: '/painel/calendario', texto: 'Ir para o Calendário' },
     },
     {

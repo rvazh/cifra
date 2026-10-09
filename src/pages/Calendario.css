@@ -39,8 +39,6 @@
   border-color: var(--preto);
 }
 
-
-
 /* ===== Resumo do mês ===== */
 .cal__resumos {
   display: grid;
@@ -126,7 +124,7 @@
 }
 
 .cal-quadro {
-  min-height: 112px;
+  min-height: 76px;
   padding: 8px;
   border-radius: 12px;
   border: 1.5px solid var(--borda);
@@ -172,129 +170,6 @@
 
 .cal-quadro--hoje .cal-quadro__numero {
   background: var(--dourado);
-}
-
-.cal-quadro--atrasado .cal-quadro__numero {
-  box-shadow: 0 0 0 2px var(--negativo);
-}
-
-.cal-quadro__itens {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-
-.cal-quadro__mais {
-  padding-left: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--cinza);
-}
-
-/* Etiqueta de cada lançamento dentro do dia */
-.cal-etiqueta {
-  display: flex;
-  flex-direction: column;
-  padding: 3px 6px;
-  border-radius: 6px;
-  border: 1.5px solid var(--cor);
-  background: var(--cor);
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1.3;
-  color: var(--preto);
-  min-width: 0;
-}
-
-.cal-etiqueta--pendente {
-  background: var(--branco);
-}
-
-.cal-etiqueta--previsto {
-  background: var(--branco);
-  border-style: dashed;
-  color: var(--cinza);
-}
-
-.cal-etiqueta--atrasado {
-  background: #fdf0ee;
-  border-color: var(--negativo);
-}
-
-.cal-etiqueta__nome {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.cal-etiqueta__valor {
-  flex-shrink: 0;
-}
-
-/* Bolinhas (só no celular) */
-.cal-quadro__pontos {
-  display: none;
-}
-
-.cal-ponto {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--cor);
-  border: 1.5px solid var(--cor);
-}
-
-.cal-ponto--pendente,
-.cal-ponto--previsto {
-  background: var(--branco);
-  border-color: #8f877a;
-}
-
-.cal-ponto--atrasado {
-  background: var(--negativo);
-  border-color: var(--negativo);
-}
-
-/* Legenda */
-.cal-legenda {
-  margin-top: 14px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 18px;
-  font-size: 12px;
-  color: var(--cinza);
-}
-
-.cal-legenda__item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.cal-legenda__amostra {
-  width: 22px;
-  height: 12px;
-  border-radius: 4px;
-  border: 1.5px solid #a8d5a2;
-}
-
-.cal-legenda__amostra--pago {
-  background: #a8d5a2;
-}
-
-.cal-legenda__amostra--pendente {
-  background: var(--branco);
-}
-
-.cal-legenda__amostra--previsto {
-  background: var(--branco);
-  border-style: dashed;
-}
-
-.cal-legenda__amostra--atrasado {
-  background: #fdf0ee;
-  border-color: var(--negativo);
 }
 
 /* ===== Dia escolhido ===== */
@@ -534,7 +409,7 @@
   }
 
   .cal-quadro {
-    min-height: 96px;
+    min-height: 68px;
   }
 }
 
@@ -565,7 +440,7 @@
   }
 
   .cal-quadro {
-    min-height: 54px;
+    min-height: 46px;
     padding: 4px 2px;
     align-items: center;
     gap: 4px;
@@ -577,21 +452,6 @@
     box-shadow: -2px 2px 0 var(--preto);
   }
 
-  .cal-quadro__itens {
-    display: none;
-  }
-
-  .cal-quadro__pontos {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 2px;
-  }
-
-  .cal-legenda {
-    gap: 6px 12px;
-    font-size: 11px;
-  }
 }
 
 @media (max-width: 560px) {

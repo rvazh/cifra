@@ -303,11 +303,49 @@
   border: 1.5px solid var(--borda);
   display: flex;
   flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .plano--destaque {
   border: 2px solid var(--preto);
   box-shadow: -6px 6px 0 var(--dourado);
+}
+
+/* Mouse em cima: o plano sobe e ganha sombra dourada */
+.plano:hover {
+  transform: translateY(-10px);
+  border-color: var(--preto);
+  box-shadow: -8px 10px 0 var(--dourado), 0 22px 40px rgba(20, 20, 20, 0.12);
+}
+
+.plano--destaque:hover {
+  box-shadow: -10px 12px 0 var(--dourado), 0 24px 44px rgba(20, 20, 20, 0.16);
+}
+
+/* O selo "Mais popular" / "Em breve" dá um pulinho junto */
+.plano:hover .plano__selo {
+  animation: plano-selo 0.5s ease;
+}
+
+@keyframes plano-selo {
+  40% {
+    transform: translateY(-4px) rotate(-3deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plano,
+  .plano:hover {
+    transition: none;
+    transform: none;
+  }
+
+  .plano:hover .plano__selo {
+    animation: none;
+  }
 }
 
 .plano__selo {

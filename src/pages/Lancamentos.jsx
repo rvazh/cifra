@@ -12,7 +12,6 @@ import {
   carregar,
   salvar,
   novoId,
-  lerFrase,
   dataCurta,
   dataPorExtenso,
   dataDeHoje,
@@ -20,6 +19,7 @@ import {
   mudarMes,
   mesFinanceiro,
   periodoDoMes,
+  diasNoMes,
 } from '../dados/lancamentos.js';
 import './Painel.css';
 import './Lancamentos.css';
@@ -28,7 +28,6 @@ import './Lancamentos.css';
 const EMOJIS = ['🐶', '🎓', '👕', '💡', '📱', '🎁', '✈️', '💪', '🧾', '💼', '🏦', '🍔'];
 const CORES_CATEGORIA = ['#A8D5A2', '#9EC5E8', '#F5C08F', '#E7AFC3', '#D9CCF0', '#F3DE8A', '#CDEBD6', '#EEE6D8'];
 
-const SUGESTOES = ['Recebi R$ 500 de freela', 'Paguei a conta de luz R$ 189,40', 'Mercado R$ 200 no Nubank'];
 
 // Tira acentos e deixa minúsculo, para a busca achar "farmacia" em "Farmácia"
 function simplificar(texto) {
@@ -45,8 +44,8 @@ function valorComSinal(valor) {
 export default function Lancamentos() {
   const [lista, setLista] = useState(carregar);
   const [mes, setMes] = useState(() => mesFinanceiro(dataDeHoje()));
-  const [frase, setFrase] = useState('');
   const [erro, setErro] = useState('');
+  const [aviso, setAviso] = useState(''); // "Lançado!" depois de salvar
   const [filtro, setFiltro] = useState(null); // categoria escolhida nos atalhos
   const [selecionadoId, setSelecionadoId] = useState(null);
   const [editando, setEditando] = useState(null); // cópia do lançamento sendo editado
@@ -69,7 +68,29 @@ export default function Lancamentos() {
   // Nomes das contas cadastradas na tela de Contas
   const [contas] = useState(nomesDasContas);
 
-  const previa = useMemo(() => lerFrase(frase, contas), [frase, contas]);
+  const contaPadrao = contas.includes('Carteira') ? 'Carteira' : contas[0] || 'Carteira';
+  const opcoesDeConta = contas.length ? contas : CONTAS;
+
+  // Formulário de novo lançamento (manual)
+  const formularioVazio = (tipo = 'despesa', conta = contaPadrao) => ({
+    titulo: '',
+    valorTexto: '',
+    tipo,
+    data: dataDeHoje(),
+    conta,
+    categoria: 'Outros',
+    parcelado: false,
+    parcelas: 2,
+  });
+  const [novo, setNovo] = useState(() => formularioVazio());
+  const valorDoNovo = Math.abs(parseFloat(String(novo.valorTexto).replace(/\./g, '').replace(',', '.'))) || 0;
+  const qtdParcelas = Math.min(Math.max(parseInt(novo.parcelas, 10) || 0, 0), 48);
+
+  function mudarNovo(campo, valor) {
+    setNovo((atual) => ({ ...atual, [campo]: valor }));
+    setErro('');
+    setAviso('');
+  }
 
   const doMes = useMemo(
     () =>
@@ -87,27 +108,58 @@ export default function Lancamentos() {
 
   function lancar(evento) {
     evento.preventDefault();
-    if (!previa || !previa.valor) {
-      setErro('Coloque um valor na frase, por exemplo: "Gastei R$ 45 no almoço".');
-      return;
-    }
-    const novo = {
-      id: novoId(),
-      data: previa.data,
-      descricao: previa.descricao,
-      categoria: previa.categoria,
-      conta: previa.conta,
-      valor: previa.tipo === 'receita' ? previa.valor : -previa.valor,
-      pago: true,
-      repete: false,
-      observacao: '',
-    };
-    setLista((atual) => [novo, ...atual]);
-    setMes(mesFinanceiro(novo.data));
-    setSelecionadoId(novo.id);
+    const titulo = novo.titulo.trim();
+    if (!titulo) return setErro('Dê um título para o lançamento, por exemplo "Mercado".');
+    if (!valorDoNovo) return setErro('Coloque o valor, por exemplo 45,90.');
+    if (!novo.data) return setErro('Escolha a data.');
+    if (novo.parcelado && (qtdParcelas < 2 || qtdParcelas > 48)) return setErro('O número de parcelas vai de 2 a 48.');
+
+    const hoje = dataDeHoje();
+    const sinal = novo.tipo === 'receita' ? 1 : -1;
+    const vezes = novo.parcelado ? qtdParcelas : 1;
+    const grupo = vezes > 1 ? novoId() : null;
+
+    // Divide o valor em centavos; a diferença dos centavos fica na 1ª parcela
+    const totalCentavos = Math.round(valorDoNovo * 100);
+    const parcelaCentavos = Math.floor(totalCentavos / vezes);
+    const sobra = totalCentavos - parcelaCentavos * vezes;
+    const diaOriginal = Number(novo.data.slice(8));
+
+    const novos = Array.from({ length: vezes }, (_, i) => {
+      const mesDaParcela = mudarMes(novo.data.slice(0, 7), i);
+      const dia = Math.min(diaOriginal, diasNoMes(mesDaParcela));
+      const data = `${mesDaParcela}-${String(dia).padStart(2, '0')}`;
+      const centavos = parcelaCentavos + (i === 0 ? sobra : 0);
+      return {
+        id: novoId(),
+        data,
+        descricao: vezes > 1 ? `${titulo} (${i + 1}/${vezes})` : titulo,
+        categoria: novo.categoria,
+        conta: novo.conta,
+        valor: (sinal * centavos) / 100,
+        pago: data <= hoje, // datas futuras ficam "a pagar"
+        repete: false,
+        observacao: '',
+        ...(grupo ? { grupo, parcela: { numero: i + 1, total: vezes } } : {}),
+      };
+    });
+
+    setLista((atual) => [...novos, ...atual]);
+    setMes(mesFinanceiro(novos[0].data));
+    setSelecionadoId(novos[0].id);
     setEditando(null);
-    setFrase('');
+    setNovo(formularioVazio(novo.tipo, novo.conta));
     setErro('');
+    setAviso(vezes > 1 ? `${vezes} parcelas lançadas, uma em cada mês.` : 'Lançamento salvo.');
+    return undefined;
+  }
+
+  function excluirParcelas(grupo) {
+    const quantas = lista.filter((l) => l.grupo === grupo).length;
+    if (!window.confirm(`Excluir as ${quantas} parcelas deste lançamento?`)) return;
+    setLista((atual) => atual.filter((l) => l.grupo !== grupo));
+    setSelecionadoId(null);
+    setEditando(null);
   }
 
   // ----- Categorias: adicionar e remover -----
@@ -210,57 +262,107 @@ export default function Lancamentos() {
         </div>
 
 
-        {/* ===== Lançamento rápido ===== */}
-        <form className="rapido" onSubmit={lancar}>
-          <div className="rapido__topo">
-            <label htmlFor="frase" className="rapido__titulo">
-              Lançamento rápido
-            </label>
-            <span className="rapido__dica">Escreva do seu jeito, a CIFRA organiza</span>
+        {/* ===== Novo lançamento (manual) ===== */}
+        <form className="novo" onSubmit={lancar} noValidate>
+          <div className="novo__topo">
+            <h2 className="novo__titulo">Novo lançamento</h2>
+            <div className="novo__tipo" role="group" aria-label="Despesa ou ganho">
+              {[
+                ['despesa', 'Despesa'],
+                ['receita', 'Ganho'],
+              ].map(([valor, texto]) => (
+                <button
+                  key={valor}
+                  type="button"
+                  aria-pressed={novo.tipo === valor}
+                  className={novo.tipo === valor ? `novo__tipo-botao novo__tipo-botao--${valor}` : 'novo__tipo-botao'}
+                  onClick={() => mudarNovo('tipo', valor)}
+                >
+                  {texto}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="rapido__linha">
-            <input
-              id="frase"
-              className="rapido__campo"
-              type="text"
-              autoComplete="off"
-              placeholder="Ex.: Gastei R$ 45 no almoço com Nubank"
-              value={frase}
-              onChange={(e) => {
-                setFrase(e.target.value);
-                setErro('');
-              }}
-            />
-            <button type="submit" className="rapido__botao">
+
+          <div className="novo__grade">
+            <label className="novo__campo novo__campo--titulo">
+              Título
+              <input
+                autoComplete="off"
+                placeholder={novo.tipo === 'receita' ? 'Ex.: Salário, Freela' : 'Ex.: Mercado, Aluguel'}
+                value={novo.titulo}
+                onChange={(e) => mudarNovo('titulo', e.target.value)}
+              />
+            </label>
+            <label className="novo__campo">
+              {novo.parcelado ? 'Valor total (R$)' : 'Valor (R$)'}
+              <input
+                inputMode="decimal"
+                autoComplete="off"
+                placeholder="0,00"
+                value={novo.valorTexto}
+                onChange={(e) => mudarNovo('valorTexto', e.target.value)}
+              />
+            </label>
+            <label className="novo__campo">
+              {novo.parcelado ? 'Data da 1ª parcela' : 'Data'}
+              <input type="date" value={novo.data} onChange={(e) => mudarNovo('data', e.target.value)} />
+            </label>
+            <label className="novo__campo">
+              Conta
+              <select value={novo.conta} onChange={(e) => mudarNovo('conta', e.target.value)}>
+                {opcoesDeConta.map((c) => (
+                  <option key={c}>{c}</option>
+                ))}
+              </select>
+            </label>
+            <label className="novo__campo">
+              Categoria
+              <select value={novo.categoria} onChange={(e) => mudarNovo('categoria', e.target.value)}>
+                {categorias.map((c) => (
+                  <option key={c.nome} value={c.nome}>
+                    {c.emoji} {c.nome}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="novo__rodape">
+            <label className="novo__check">
+              <input type="checkbox" checked={novo.parcelado} onChange={(e) => mudarNovo('parcelado', e.target.checked)} />
+              Parcelado
+            </label>
+            {novo.parcelado && (
+              <label className="novo__parcelas">
+                em
+                <input
+                  type="number"
+                  min={2}
+                  max={48}
+                  value={novo.parcelas}
+                  onChange={(e) => mudarNovo('parcelas', e.target.value)}
+                  aria-label="Número de parcelas"
+                />
+                vezes
+              </label>
+            )}
+            {novo.parcelado && valorDoNovo > 0 && qtdParcelas >= 2 && (
+              <span className="novo__resumo">
+                {qtdParcelas}x de {reais(valorDoNovo / qtdParcelas)}, uma por mês
+              </span>
+            )}
+            <button type="submit" className="novo__botao">
               Lançar
               <IconeSeta tamanho={18} espessura={2.4} />
             </button>
           </div>
-
-          {/* Mostra como a frase foi entendida antes de lançar */}
-          {previa && previa.valor ? (
-            <div className="rapido__previa" aria-live="polite">
-              <span className={previa.tipo === 'receita' ? 'previa previa--receita' : 'previa previa--despesa'}>
-                {previa.tipo === 'receita' ? 'Receita' : 'Despesa'}
-              </span>
-              <span className="previa">{reais(previa.valor)}</span>
-              <span className="previa">{previa.descricao}</span>
-              <span className="previa">
-                {categoria(previa.categoria).emoji} {previa.categoria}
-              </span>
-              <span className="previa">{previa.conta}</span>
-              <span className="previa">{dataCurta(previa.data)}</span>
-            </div>
-          ) : (
-            <div className="rapido__sugestoes">
-              {SUGESTOES.map((s) => (
-                <button key={s} type="button" className="rapido__sugestao" onClick={() => setFrase(s)}>
-                  {s}
-                </button>
-              ))}
-            </div>
+          {erro && <p className="novo__erro">{erro}</p>}
+          {aviso && (
+            <p className="novo__ok" role="status">
+              {aviso}
+            </p>
           )}
-          {erro && <p className="rapido__erro">{erro}</p>}
         </form>
 
         {/* ===== Atalhos de categoria (filtram a lista) + adicionar/remover ===== */}
@@ -410,6 +512,14 @@ export default function Lancamentos() {
                       </span>
                     </dd>
                   </div>
+                  {selecionado.parcela && (
+                    <div>
+                      <dt>Parcela</dt>
+                      <dd>
+                        {selecionado.parcela.numero} de {selecionado.parcela.total}
+                      </dd>
+                    </div>
+                  )}
                   <div>
                     <dt>Repete</dt>
                     <dd>{selecionado.repete ? 'Todo mês' : 'Não'}</dd>
@@ -424,9 +534,14 @@ export default function Lancamentos() {
                     Editar
                   </button>
                   <button type="button" className="detalhe__excluir" onClick={() => excluir(selecionado.id)}>
-                    Excluir
+                    {selecionado.grupo ? 'Excluir esta' : 'Excluir'}
                   </button>
                 </div>
+                {selecionado.grupo && (
+                  <button type="button" className="detalhe__excluir-todas" onClick={() => excluirParcelas(selecionado.grupo)}>
+                    Excluir todas as parcelas
+                  </button>
+                )}
               </>
             )}
 
