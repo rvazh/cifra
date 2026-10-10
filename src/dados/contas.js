@@ -15,7 +15,7 @@ export const CORES = ['#D9CCF0', '#F5C08F', '#A8D5A2', '#9EC5E8', '#E7AFC3', '#F
 function exemplos() {
   return [
     { id: 'conta-exemplo-1', nome: 'Nubank', tipo: 'Conta corrente', saldoInicial: 1950, cor: '#D9CCF0', noTotal: true, exemplo: true },
-    { id: 'conta-exemplo-2', nome: 'Inter', tipo: 'Conta corrente', saldoInicial: 700, cor: '#F5C08F', noTotal: true, exemplo: true },
+    { id: 'conta-exemplo-2', nome: 'Inter', tipo: 'Conta corrente', saldoInicial: 1459.6, cor: '#F5C08F', noTotal: true, exemplo: true },
     { id: 'conta-exemplo-3', nome: 'Carteira', tipo: 'Carteira', saldoInicial: 1080, cor: '#A8D5A2', noTotal: true, exemplo: true },
   ];
 }

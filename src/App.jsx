@@ -18,6 +18,10 @@ import Configuracoes from './pages/Configuracoes.jsx';
 import Cursos from './pages/Cursos.jsx';
 import EmBreve from './pages/EmBreve.jsx';
 import { estaLogado } from './dados/acesso.js';
+import AlertasDeVencimento from './components/AlertasDeVencimento.jsx';
+import Checklist from './pages/Checklist.jsx';
+import Noticias from './pages/Noticias.jsx';
+import Comprovantes from './pages/Comprovantes.jsx';
 
 // Páginas que aparecem sem o cabeçalho e o rodapé do site
 const telasSemMenu = ['/entrar', '/privacidade', '/termos'];
@@ -63,6 +67,9 @@ export default function App() {
           <Route path="/painel/objetivos" element={<Objetivos />} />
           <Route path="/painel/configuracoes" element={<Configuracoes />} />
           <Route path="/painel/cursos" element={<Cursos />} />
+          <Route path="/painel/checklist" element={<Checklist />} />
+          <Route path="/painel/noticias" element={<Noticias />} />
+          <Route path="/painel/comprovantes" element={<Comprovantes />} />
           <Route
             path="/painel/*"
             element={<EmBreve titulo="Em construção" voltarPara="/painel" voltarTexto="Voltar para o painel" />}
@@ -75,6 +82,7 @@ export default function App() {
         </Routes>
       </main>
       {mostrarMenu && <Footer />}
+      <AlertasDeVencimento />
     </div>
   );
 }

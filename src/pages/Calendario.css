@@ -285,6 +285,11 @@
   color: var(--dourado-escuro);
 }
 
+.cal-selo--guardado {
+  background: var(--dourado);
+  color: var(--preto);
+}
+
 .cal-selo--previsto {
   background: #f1ede6;
   color: var(--cinza);
@@ -296,52 +301,160 @@
 }
 
 /* Adicionar neste dia */
-.cal-dia__novo {
+/* ===== Novo evento ===== */
+.cal-evento__abrir {
+  width: 100%;
   margin-top: 14px;
+  min-height: 46px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 8px;
+  border: 2px dashed #d8ccb7;
+  border-radius: 12px;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--preto);
+  cursor: pointer;
 }
 
-.cal-dia__novo-rotulo {
+.cal-evento__abrir:hover {
+  border-color: var(--dourado);
+  background: var(--fundo-painel);
+}
+
+.cal-evento__ok {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #e3f1e8;
+  color: var(--positivo);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cal-evento {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--fundo-painel);
+  border: 1px solid var(--borda);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cal-evento__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+}
+
+.cal-evento__fechar {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: var(--branco);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.cal-evento__opcoes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+}
+
+.cal-evento__opcao {
+  min-height: 36px;
+  border: none;
+  border-radius: 9px;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.cal-evento__opcao--despesa {
+  background: #d9544a;
+  color: var(--branco);
+}
+
+.cal-evento__opcao--receita {
+  background: #2e9d5b;
+  color: var(--branco);
+}
+
+.cal-evento__opcao--ativa {
+  background: var(--preto);
+  color: var(--dourado);
+}
+
+.cal-evento__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   font-size: 13px;
   font-weight: 700;
   color: var(--texto-suave);
 }
 
-.cal-dia__novo-linha {
-  display: flex;
-  gap: 8px;
-}
-
-.cal-dia__novo-linha input {
-  flex: 1;
-  min-width: 0;
+.cal-evento__campo input,
+.cal-evento__campo select {
+  width: 100%;
   height: 44px;
-  padding: 0 14px;
-  border-radius: 12px;
+  padding: 0 12px;
+  border-radius: 10px;
   border: 1.5px solid var(--borda);
-  background: var(--fundo-painel);
+  background: var(--branco);
   font: inherit;
   font-size: 15px;
+  font-weight: 500;
+  color: var(--preto);
 }
 
-.cal-dia__novo-linha input:focus {
+.cal-evento__campo input:focus,
+.cal-evento__campo select:focus {
   outline: none;
   border-color: var(--dourado);
 }
 
-.cal-dia__novo-linha button {
-  width: 44px;
-  height: 44px;
+.cal-evento__dupla {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 10px;
+}
+
+.cal-evento__dica {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--cinza);
+}
+
+.cal-evento__salvar {
+  min-height: 46px;
   border: none;
   border-radius: 12px;
   background: var(--dourado);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
   color: var(--preto);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
+}
+
+.cal-evento__salvar:hover {
+  filter: brightness(1.05);
 }
 
 .cal-dia__erro {

@@ -139,7 +139,31 @@ function exemplos() {
     observacao: '',
     exemplo: true,
   }));
-  return [...doMes, ...historicoDeExemplo()];
+  return [...doMes, ...historicoDeExemplo(), ...parcelasDeExemplo()];
+}
+
+// Uma compra parcelada de exemplo: celular em 10x, começou há 4 meses (aparece no Checklist)
+function parcelasDeExemplo() {
+  const total = 10;
+  const inicio = mudarMes(dataDeHoje().slice(0, 7), -4);
+  const hoje = dataDeHoje();
+  return Array.from({ length: total }, (_, i) => {
+    const data = `${mudarMes(inicio, i)}-12`;
+    return {
+      id: `exemplo-p${i}`,
+      data,
+      descricao: `Celular novo (${i + 1}/${total})`,
+      categoria: 'Outros',
+      conta: 'Inter',
+      valor: -189.9,
+      pago: data <= hoje,
+      repete: false,
+      observacao: '',
+      grupo: 'exemplo-celular',
+      parcela: { numero: i + 1, total },
+      exemplo: true,
+    };
+  });
 }
 
 // Cinco meses anteriores de exemplo, para os relatórios terem o que comparar.
@@ -233,6 +257,27 @@ export function lancamentosDoMes(lista, mes, inicio = 1) {
     });
 
   return [...doMes, ...previstos];
+}
+
+// ----- Situação de uma conta: pago, guardado ou pendente -----
+// "Guardado" = o dinheiro já foi separado, mas a conta ainda não foi paga.
+export function situacaoDe(l) {
+  if (l.pago) return 'pago';
+  if (l.guardado) return 'guardado';
+  return 'pendente';
+}
+
+// Devolve a lista com a situação do lançamento trocada.
+// Um "previsto" (conta que se repete) vira um lançamento de verdade ao mudar de situação.
+export function comSituacao(lista, item, situacao) {
+  if (situacaoDe(item) === situacao) return lista;
+  const campos = { pago: situacao === 'pago', guardado: situacao === 'guardado' };
+  if (item.previsto) {
+    const real = { ...item, ...campos, id: novoId(), repete: false, exemplo: false };
+    delete real.previsto;
+    return [real, ...lista];
+  }
+  return lista.map((l) => (l.id === item.id ? { ...l, ...campos } : l));
 }
 
 // ----- Ler e salvar -----

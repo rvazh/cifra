@@ -5,12 +5,13 @@ import { IconeMais } from '../components/Icones.jsx';
 import { reais } from '../components/Graficos.jsx';
 import { nomesDasContas } from '../dados/contas.js';
 import { carregarPreferencias } from '../dados/preferencias.js';
+import { pedirPermissaoDeAviso, conferirAlertasAgora } from '../dados/alertas.js';
 import {
+  CONTAS,
   categoria,
   carregar,
   salvar,
   novoId,
-  lerFrase,
   dataDeHoje,
   nomeDoMes,
   mudarMes,
@@ -57,6 +58,7 @@ function quandoVence(data) {
 // Situação de cada lançamento: pago, a pagar, atrasado ou previsto
 function situacao(l, hoje) {
   if (l.pago) return { classe: 'pago', texto: l.valor >= 0 ? 'Recebido' : 'Pago' };
+  if (l.guardado) return { classe: 'guardado', texto: 'Guardado' };
   if (l.data < hoje) return { classe: 'atrasado', texto: 'Atrasado' };
   if (l.previsto) return { classe: 'previsto', texto: 'Previsto' };
   return { classe: 'pendente', texto: l.valor >= 0 ? 'A receber' : 'A pagar' };
@@ -67,8 +69,9 @@ export default function Calendario() {
   const [lista, setLista] = useState(carregar);
   const [mes, setMes] = useState(hoje.slice(0, 7));
   const [diaEscolhido, setDiaEscolhido] = useState(hoje);
-  const [frase, setFrase] = useState('');
   const [erro, setErro] = useState('');
+  const [aviso, setAviso] = useState('');
+  const [evento, setEvento] = useState(null); // formulário de novo evento (aberto/fechado)
 
   // Sempre que a lista mudar, salva no aparelho
   useEffect(() => salvar(lista), [lista]);
@@ -139,31 +142,66 @@ export default function Calendario() {
     setLista((atual) => atual.map((item) => (item.id === l.id ? { ...item, pago: !item.pago } : item)));
   }
 
-  function adicionar(evento) {
-    evento.preventDefault();
-    const lido = lerFrase(frase, nomesDasContas());
-    if (!lido || !lido.valor) {
-      setErro('Coloque um valor, por exemplo: "Dentista R$ 150".');
-      return;
-    }
+  // ----- Novo evento (vencimento) -----
+  const contas = nomesDasContas();
+  const opcoesDeConta = contas.length ? contas : CONTAS;
+
+  function abrirEvento() {
+    setErro('');
+    setAviso('');
+    setEvento({
+      titulo: '',
+      valorTexto: '',
+      tipo: 'despesa',
+      data: diaEscolhido,
+      conta: contas.includes('Carteira') ? 'Carteira' : opcoesDeConta[0],
+      fixo: false,
+    });
+  }
+
+  function mudarEvento(campo, valor) {
+    setEvento((atual) => ({ ...atual, [campo]: valor }));
+    setErro('');
+  }
+
+  function criarEvento(e) {
+    e.preventDefault();
+    const titulo = evento.titulo.trim();
+    const valor = Math.abs(parseFloat(String(evento.valorTexto).replace(/\./g, '').replace(',', '.'))) || 0;
+    if (!titulo) return setErro('Dê um nome para o evento, por exemplo "Conta de luz".');
+    if (!valor) return setErro('Coloque o valor, por exemplo 189,90.');
+    if (!evento.data) return setErro('Escolha a data do vencimento.');
+
     const novo = {
       id: novoId(),
-      data: diaEscolhido,
-      descricao: lido.descricao,
-      categoria: lido.categoria,
-      conta: lido.conta,
-      valor: lido.tipo === 'receita' ? lido.valor : -lido.valor,
-      pago: diaEscolhido <= hoje, // data futura fica "a pagar"
-      repete: false,
+      data: evento.data,
+      descricao: titulo,
+      categoria: 'Outros',
+      conta: evento.conta,
+      valor: evento.tipo === 'receita' ? valor : -valor,
+      pago: false, // é um vencimento: fica "a pagar" até ser marcado
+      repete: evento.fixo, // fixo = aparece todo mês a partir desta data
       observacao: '',
+      evento: true,
     };
     setLista((atual) => [novo, ...atual]);
-    setFrase('');
-    setErro('');
+    setEvento(null);
+    setMes(evento.data.slice(0, 7));
+    setDiaEscolhido(evento.data);
+    setAviso(
+      evento.tipo === 'receita'
+        ? 'Evento criado.'
+        : 'Evento criado. Você será avisado 3 dias antes e 1 dia antes do vencimento.'
+    );
+    pedirPermissaoDeAviso(); // pede para mostrar notificações (só pergunta uma vez)
+    conferirAlertasAgora(); // se já está perto de vencer, o aviso sai na hora
+    return undefined;
   }
 
   function escolherDia(data) {
     setDiaEscolhido(data);
+    setAviso('');
+    setEvento((atual) => (atual ? { ...atual, data } : atual));
     // Em telas pequenas o painel do dia fica embaixo do calendário: rola até ele
     if (window.innerWidth <= 1100) {
       setTimeout(() => document.querySelector('.cal-dia')?.scrollIntoView({ behavior: 'smooth' }), 50);
@@ -297,29 +335,110 @@ export default function Calendario() {
                 </ul>
               )}
 
-              {/* Adicionar algo neste dia, com a mesma frase do lançamento rápido */}
-              <form className="cal-dia__novo" onSubmit={adicionar}>
-                <label htmlFor="frase-dia" className="cal-dia__novo-rotulo">
-                  Adicionar neste dia
-                </label>
-                <div className="cal-dia__novo-linha">
-                  <input
-                    id="frase-dia"
-                    type="text"
-                    autoComplete="off"
-                    placeholder="Ex.: Dentista R$ 150"
-                    value={frase}
-                    onChange={(e) => {
-                      setFrase(e.target.value);
-                      setErro('');
-                    }}
-                  />
-                  <button type="submit" aria-label="Adicionar">
-                    <IconeMais tamanho={18} espessura={2.6} />
+              {aviso && (
+                <p className="cal-evento__ok" role="status">
+                  {aviso}
+                </p>
+              )}
+
+              {/* Novo evento (vencimento fixo ou de uma vez só) */}
+              {!evento ? (
+                <button type="button" className="cal-evento__abrir" onClick={abrirEvento}>
+                  <IconeMais tamanho={18} espessura={2.6} />
+                  Adicionar evento
+                </button>
+              ) : (
+                <form className="cal-evento" onSubmit={criarEvento} noValidate>
+                  <div className="cal-evento__topo">
+                    <b>Novo evento</b>
+                    <button type="button" className="cal-evento__fechar" onClick={() => setEvento(null)} aria-label="Fechar">
+                      ×
+                    </button>
+                  </div>
+
+                  <div className="cal-evento__opcoes" role="group" aria-label="Despesa ou ganho">
+                    {[
+                      ['despesa', 'Despesa'],
+                      ['receita', 'Ganho'],
+                    ].map(([v, t]) => (
+                      <button
+                        key={v}
+                        type="button"
+                        aria-pressed={evento.tipo === v}
+                        className={evento.tipo === v ? `cal-evento__opcao cal-evento__opcao--${v}` : 'cal-evento__opcao'}
+                        onClick={() => mudarEvento('tipo', v)}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+
+                  <label className="cal-evento__campo">
+                    Nome
+                    <input
+                      autoFocus
+                      autoComplete="off"
+                      placeholder="Ex.: Conta de luz, IPVA"
+                      value={evento.titulo}
+                      onChange={(e) => mudarEvento('titulo', e.target.value)}
+                    />
+                  </label>
+                  <div className="cal-evento__dupla">
+                    <label className="cal-evento__campo">
+                      Valor (R$)
+                      <input
+                        inputMode="decimal"
+                        autoComplete="off"
+                        placeholder="0,00"
+                        value={evento.valorTexto}
+                        onChange={(e) => mudarEvento('valorTexto', e.target.value)}
+                      />
+                    </label>
+                    <label className="cal-evento__campo">
+                      Vencimento
+                      <input type="date" value={evento.data} onChange={(e) => mudarEvento('data', e.target.value)} />
+                    </label>
+                  </div>
+                  <label className="cal-evento__campo">
+                    Conta
+                    <select value={evento.conta} onChange={(e) => mudarEvento('conta', e.target.value)}>
+                      {opcoesDeConta.map((c) => (
+                        <option key={c}>{c}</option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <div className="cal-evento__opcoes" role="group" aria-label="Frequência">
+                    <button
+                      type="button"
+                      aria-pressed={!evento.fixo}
+                      className={!evento.fixo ? 'cal-evento__opcao cal-evento__opcao--ativa' : 'cal-evento__opcao'}
+                      onClick={() => mudarEvento('fixo', false)}
+                    >
+                      Só nesta data
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={evento.fixo}
+                      className={evento.fixo ? 'cal-evento__opcao cal-evento__opcao--ativa' : 'cal-evento__opcao'}
+                      onClick={() => mudarEvento('fixo', true)}
+                    >
+                      Fixo (todo mês)
+                    </button>
+                  </div>
+                  <p className="cal-evento__dica">
+                    {evento.fixo
+                      ? `Vai aparecer todo mês, no dia ${Number(evento.data.slice(8)) || ''}.`
+                      : 'Aparece só uma vez. Para outro mês, é só mudar a data.'}{' '}
+                    {evento.tipo === 'despesa' && 'Você recebe um aviso 3 dias e 1 dia antes.'}
+                  </p>
+
+                  {erro && <p className="cal-dia__erro">{erro}</p>}
+                  <button type="submit" className="cal-evento__salvar">
+                    Criar evento
                   </button>
-                </div>
-                {erro && <p className="cal-dia__erro">{erro}</p>}
-              </form>
+                </form>
+              )}
             </section>
 
             {/* ===== Próximos vencimentos ===== */}

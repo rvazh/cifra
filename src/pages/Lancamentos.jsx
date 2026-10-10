@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import MenuLateral from '../components/MenuLateral.jsx';
-import { IconeSeta, IconeBusca } from '../components/Icones.jsx';
+import { IconeSeta, IconeBusca, IconeClipe } from '../components/Icones.jsx';
+import { TIPOS_ACEITOS, guardarComprovante, pegarComprovante, vincularComprovante } from '../dados/comprovantes.js';
 import { reais } from '../components/Graficos.jsx';
 import { nomesDasContas } from '../dados/contas.js';
 import {
@@ -46,6 +47,11 @@ export default function Lancamentos() {
   const [mes, setMes] = useState(() => mesFinanceiro(dataDeHoje()));
   const [erro, setErro] = useState('');
   const [aviso, setAviso] = useState(''); // "Lançado!" depois de salvar
+  const [arquivo, setArquivo] = useState(null); // comprovante escolhido no formulário
+  const [salvando, setSalvando] = useState(false);
+  const campoComprovante = useRef(null);
+  const campoAnexo = useRef(null);
+  const [anexo, setAnexo] = useState(null); // { id, url, nome, tipo } do lançamento aberto
   const [filtro, setFiltro] = useState(null); // categoria escolhida nos atalhos
   const [selecionadoId, setSelecionadoId] = useState(null);
   const [editando, setEditando] = useState(null); // cópia do lançamento sendo editado
@@ -79,11 +85,12 @@ export default function Lancamentos() {
     data: dataDeHoje(),
     conta,
     categoria: 'Outros',
-    parcelado: false,
+    frequencia: 'unica', // 'unica' | 'fixo' (todo mês) | 'parcelado'
     parcelas: 2,
   });
   const [novo, setNovo] = useState(() => formularioVazio());
   const valorDoNovo = Math.abs(parseFloat(String(novo.valorTexto).replace(/\./g, '').replace(',', '.'))) || 0;
+  const parcelado = novo.frequencia === 'parcelado';
   const qtdParcelas = Math.min(Math.max(parseInt(novo.parcelas, 10) || 0, 0), 48);
 
   function mudarNovo(campo, valor) {
@@ -106,17 +113,18 @@ export default function Lancamentos() {
   const saldoDoMes = doMes.reduce((soma, l) => soma + l.valor, 0);
   const selecionado = lista.find((l) => l.id === selecionadoId) || null;
 
-  function lancar(evento) {
+  async function lancar(evento) {
     evento.preventDefault();
+    if (salvando) return undefined;
     const titulo = novo.titulo.trim();
     if (!titulo) return setErro('Dê um título para o lançamento, por exemplo "Mercado".');
     if (!valorDoNovo) return setErro('Coloque o valor, por exemplo 45,90.');
     if (!novo.data) return setErro('Escolha a data.');
-    if (novo.parcelado && (qtdParcelas < 2 || qtdParcelas > 48)) return setErro('O número de parcelas vai de 2 a 48.');
+    if (parcelado && (qtdParcelas < 2 || qtdParcelas > 48)) return setErro('O número de parcelas vai de 2 a 48.');
 
     const hoje = dataDeHoje();
     const sinal = novo.tipo === 'receita' ? 1 : -1;
-    const vezes = novo.parcelado ? qtdParcelas : 1;
+    const vezes = parcelado ? qtdParcelas : 1;
     const grupo = vezes > 1 ? novoId() : null;
 
     // Divide o valor em centavos; a diferença dos centavos fica na 1ª parcela
@@ -138,20 +146,87 @@ export default function Lancamentos() {
         conta: novo.conta,
         valor: (sinal * centavos) / 100,
         pago: data <= hoje, // datas futuras ficam "a pagar"
-        repete: false,
+        repete: novo.frequencia === 'fixo', // fixo: aparece todo mês (e no Checklist)
         observacao: '',
         ...(grupo ? { grupo, parcela: { numero: i + 1, total: vezes } } : {}),
       };
     });
+
+    // Comprovante (opcional): guarda o arquivo e liga ao lançamento (a todas as parcelas)
+    if (arquivo) {
+      setSalvando(true);
+      try {
+        const registro = await guardarComprovante(arquivo, novos[0].id);
+        novos.forEach((l) => {
+          l.comprovanteId = registro.id;
+        });
+      } catch (e) {
+        setSalvando(false);
+        return setErro(e.message || 'Não foi possível guardar o comprovante.');
+      }
+      setSalvando(false);
+    }
 
     setLista((atual) => [...novos, ...atual]);
     setMes(mesFinanceiro(novos[0].data));
     setSelecionadoId(novos[0].id);
     setEditando(null);
     setNovo(formularioVazio(novo.tipo, novo.conta));
+    setArquivo(null);
     setErro('');
-    setAviso(vezes > 1 ? `${vezes} parcelas lançadas, uma em cada mês.` : 'Lançamento salvo.');
+    const textoComprovante = arquivo ? ' Comprovante guardado.' : '';
+    const textoBase =
+      vezes > 1
+        ? `${vezes} parcelas lançadas, uma em cada mês.`
+        : novo.frequencia === 'fixo'
+          ? 'Conta fixa salva: ela aparece todo mês.'
+          : 'Lançamento salvo.';
+    const textoChecklist = novos[0].valor < 0 && (vezes > 1 || novo.frequencia === 'fixo') ? ' Já está no Checklist.' : '';
+    setAviso(textoBase + textoChecklist + textoComprovante);
     return undefined;
+  }
+
+  // Mostra o comprovante do lançamento aberto
+  const idDoAnexo = selecionado?.comprovanteId || null;
+  useEffect(() => {
+    let url = null;
+    let ativo = true;
+    if (!idDoAnexo) {
+      setAnexo(null);
+      return undefined;
+    }
+    pegarComprovante(idDoAnexo)
+      .then((c) => {
+        if (!ativo) return;
+        if (!c) return setAnexo(null);
+        url = URL.createObjectURL(c.blob);
+        return setAnexo({ id: c.id, url, nome: c.nome, tipo: c.tipo });
+      })
+      .catch(() => setAnexo(null));
+    return () => {
+      ativo = false;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [idDoAnexo]);
+
+  async function anexarComprovante(evento) {
+    const escolhido = evento.target.files[0];
+    evento.target.value = '';
+    if (!escolhido || !selecionado) return;
+    try {
+      const registro = await guardarComprovante(escolhido, selecionado.id);
+      const ids = selecionado.grupo ? lista.filter((l) => l.grupo === selecionado.grupo).map((l) => l.id) : [selecionado.id];
+      setLista((atual) => atual.map((l) => (ids.includes(l.id) ? { ...l, comprovanteId: registro.id } : l)));
+    } catch (e) {
+      window.alert(e.message || 'Não foi possível guardar o comprovante.');
+    }
+  }
+
+  async function desligarComprovante() {
+    if (!selecionado?.comprovanteId) return;
+    await vincularComprovante(selecionado.comprovanteId, null).catch(() => {});
+    const id = selecionado.comprovanteId;
+    setLista((atual) => atual.map((l) => (l.comprovanteId === id ? { ...l, comprovanteId: undefined } : l)));
   }
 
   function excluirParcelas(grupo) {
@@ -295,7 +370,7 @@ export default function Lancamentos() {
               />
             </label>
             <label className="novo__campo">
-              {novo.parcelado ? 'Valor total (R$)' : 'Valor (R$)'}
+              {parcelado ? 'Valor total (R$)' : 'Valor (R$)'}
               <input
                 inputMode="decimal"
                 autoComplete="off"
@@ -305,7 +380,7 @@ export default function Lancamentos() {
               />
             </label>
             <label className="novo__campo">
-              {novo.parcelado ? 'Data da 1ª parcela' : 'Data'}
+              {parcelado ? 'Data da 1ª parcela' : 'Data'}
               <input type="date" value={novo.data} onChange={(e) => mudarNovo('data', e.target.value)} />
             </label>
             <label className="novo__campo">
@@ -329,11 +404,24 @@ export default function Lancamentos() {
           </div>
 
           <div className="novo__rodape">
-            <label className="novo__check">
-              <input type="checkbox" checked={novo.parcelado} onChange={(e) => mudarNovo('parcelado', e.target.checked)} />
-              Parcelado
-            </label>
-            {novo.parcelado && (
+            <div className="novo__frequencia" role="group" aria-label="Repetição">
+              {[
+                ['unica', 'Uma vez'],
+                ['fixo', 'Fixo (todo mês)'],
+                ['parcelado', 'Parcelado'],
+              ].map(([valor, texto]) => (
+                <button
+                  key={valor}
+                  type="button"
+                  aria-pressed={novo.frequencia === valor}
+                  className={novo.frequencia === valor ? 'novo__frequencia-botao novo__frequencia-botao--ativo' : 'novo__frequencia-botao'}
+                  onClick={() => mudarNovo('frequencia', valor)}
+                >
+                  {texto}
+                </button>
+              ))}
+            </div>
+            {parcelado && (
               <label className="novo__parcelas">
                 em
                 <input
@@ -347,12 +435,34 @@ export default function Lancamentos() {
                 vezes
               </label>
             )}
-            {novo.parcelado && valorDoNovo > 0 && qtdParcelas >= 2 && (
+            {novo.frequencia === 'fixo' && <span className="novo__resumo">Aparece todo mês e no Checklist</span>}
+            {parcelado && valorDoNovo > 0 && qtdParcelas >= 2 && (
               <span className="novo__resumo">
                 {qtdParcelas}x de {reais(valorDoNovo / qtdParcelas)}, uma por mês
               </span>
             )}
-            <button type="submit" className="novo__botao">
+            <button type="button" className={arquivo ? 'novo__anexo novo__anexo--ok' : 'novo__anexo'} onClick={() => campoComprovante.current?.click()}>
+              <IconeClipe tamanho={16} espessura={2.2} />
+              {arquivo ? arquivo.name : 'Anexar comprovante'}
+            </button>
+            {arquivo && (
+              <button type="button" className="novo__anexo-tirar" onClick={() => setArquivo(null)} aria-label="Tirar comprovante">
+                ×
+              </button>
+            )}
+            <input
+              ref={campoComprovante}
+              type="file"
+              accept={TIPOS_ACEITOS}
+              hidden
+              onChange={(e) => {
+                setArquivo(e.target.files[0] || null);
+                e.target.value = '';
+                setErro('');
+                setAviso('');
+              }}
+            />
+            <button type="submit" className="novo__botao" disabled={salvando}>
               Lançar
               <IconeSeta tamanho={18} espessura={2.4} />
             </button>
@@ -529,6 +639,28 @@ export default function Lancamentos() {
                     <dd>{selecionado.observacao || '—'}</dd>
                   </div>
                 </dl>
+                <div className="detalhe__comprovante">
+                  {anexo ? (
+                    <>
+                      <a href={anexo.url} target="_blank" rel="noopener noreferrer" className="detalhe__comprovante-ver">
+                        {anexo.tipo.startsWith('image/') ? <img src={anexo.url} alt="" /> : <span className="detalhe__pdf">PDF</span>}
+                        <span>
+                          <b>Comprovante</b>
+                          <small>{anexo.nome}</small>
+                        </span>
+                      </a>
+                      <button type="button" className="detalhe__comprovante-tirar" onClick={desligarComprovante}>
+                        Desligar
+                      </button>
+                    </>
+                  ) : (
+                    <button type="button" className="detalhe__comprovante-anexar" onClick={() => campoAnexo.current?.click()}>
+                      <IconeClipe tamanho={16} espessura={2.2} />
+                      Anexar comprovante
+                    </button>
+                  )}
+                  <input ref={campoAnexo} type="file" accept={TIPOS_ACEITOS} hidden onChange={anexarComprovante} />
+                </div>
                 <div className="detalhe__acoes">
                   <button type="button" className="detalhe__editar" onClick={() => comecarEdicao(selecionado)}>
                     Editar

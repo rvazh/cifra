@@ -353,3 +353,39 @@ export const IconeLivro = (p) => (
     <path d="M9 7h6" />
   </Svg>
 );
+
+export const IconeChecklist = (p) => (
+  <Svg {...p}>
+    <path d="M9 6h11" />
+    <path d="M9 12h11" />
+    <path d="M9 18h11" />
+    <path d="M3 6l1.5 1.5L7 5" />
+    <path d="M3 12l1.5 1.5L7 11" />
+    <path d="M3 18l1.5 1.5L7 17" />
+  </Svg>
+);
+
+export const IconeRecibo = (p) => (
+  <Svg {...p}>
+    <path d="M6 2h12v20l-3-2-3 2-3-2-3 2z" />
+    <path d="M9 7h6" />
+    <path d="M9 11h6" />
+    <path d="M9 15h4" />
+  </Svg>
+);
+
+export const IconeJornal = (p) => (
+  <Svg {...p}>
+    <path d="M4 4h13v16H6a2 2 0 0 1-2-2z" />
+    <path d="M17 8h3v10a2 2 0 0 1-2 2" />
+    <path d="M8 8h5" />
+    <path d="M8 12h5" />
+    <path d="M8 16h3" />
+  </Svg>
+);
+
+export const IconeClipe = (p) => (
+  <Svg {...p}>
+    <path d="M21 11l-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7" />
+  </Svg>
+);

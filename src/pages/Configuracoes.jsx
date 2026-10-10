@@ -20,6 +20,8 @@ import { carregarContas, salvarContas } from '../dados/contas.js';
 import { carregarObjetivos, salvarObjetivos } from '../dados/objetivos.js';
 import { carregarPreferencias, salvarPreferencias } from '../dados/preferencias.js';
 import { EMAIL_CONTATO } from '../config.js';
+import { pedirPermissaoDeAviso } from '../dados/alertas.js';
+import { apagarTodosComprovantes } from '../dados/comprovantes.js';
 import './Painel.css';
 import './Configuracoes.css';
 
@@ -225,9 +227,9 @@ export default function Configuracoes() {
     setMensagem('Dados de exemplo apagados.');
   }
 
-  function apagarTudo() {
+  async function apagarTudo() {
     const certeza = window.confirm(
-      'Apagar todos os dados deste aparelho?\n\nContas, lançamentos, objetivos e preferências serão apagados. Não tem volta.'
+      'Apagar todos os dados deste aparelho?\n\nContas, lançamentos, objetivos, comprovantes e preferências serão apagados. Não tem volta.'
     );
     if (!certeza) return;
     try {
@@ -239,6 +241,7 @@ export default function Configuracoes() {
     salvar([]);
     salvarContas([]);
     salvarObjetivos([]);
+    await apagarTodosComprovantes();
     window.location.hash = '#/entrar';
     window.location.reload();
   }
@@ -346,16 +349,23 @@ export default function Configuracoes() {
           {/* ===== Lembretes ===== */}
           <Grupo titulo="Lembretes">
             <label className="cfg-linha">
-              <Linha Icone={IconeSino} titulo="Avisar contas a vencer" sub="Aviso no topo do painel">
+              <Linha
+                Icone={IconeSino}
+                titulo="Avisar contas a vencer"
+                sub="Notificação 3 dias e 1 dia antes, e aviso no topo do painel"
+              >
                 <Interruptor
                   rotulo="Avisar contas a vencer"
                   ligado={preferencias.avisarContas}
-                  aoMudar={(v) => mudar('avisarContas', v)}
+                  aoMudar={(v) => {
+                    mudar('avisarContas', v);
+                    if (v) pedirPermissaoDeAviso();
+                  }}
                 />
               </Linha>
             </label>
             <label className={preferencias.avisarContas ? 'cfg-linha' : 'cfg-linha cfg-linha--desligada'}>
-              <Linha Icone={IconeCalendario} titulo="Avisar com">
+              <Linha Icone={IconeCalendario} titulo="Aviso no painel com">
                 <span className="cfg-linha__valor">
                   <select
                     value={preferencias.diasDeAviso}
@@ -377,7 +387,7 @@ export default function Configuracoes() {
           {/* ===== Seus dados ===== */}
           <Grupo titulo="Seus dados">
             <button type="button" className="cfg-linha" onClick={baixarBackup}>
-              <Linha Icone={IconeBaixar} titulo="Baixar backup" sub="Uma cópia de tudo, para guardar ou levar a outro aparelho">
+              <Linha Icone={IconeBaixar} titulo="Baixar backup" sub="Uma cópia dos seus dados (os comprovantes ficam de fora)">
                 <span className="cfg-linha__valor">
                   arquivo .json
                   <Seta />
