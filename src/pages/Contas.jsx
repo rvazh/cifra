@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import MenuLateral from '../components/MenuLateral.jsx';
-import { IconeMais, IconeCima, IconeBaixo } from '../components/Icones.jsx';
+import { IconeMais, IconeCima, IconeBaixo, IconeEnviar } from '../components/Icones.jsx';
+import ImportarOFX from '../components/ImportarOFX.jsx';
 import { reais } from '../components/Graficos.jsx';
 import { carregar, salvar, novoId, dataCurta } from '../dados/lancamentos.js';
-import { TIPOS, CORES, carregarContas, salvarContas, resumoDaConta } from '../dados/contas.js';
+import { TIPOS, CORES, carregarContas, salvarContas, resumoDaConta, mesmoNome } from '../dados/contas.js';
+import { lerArquivoOFX } from '../dados/ofx.js';
 import './Painel.css';
 import './Contas.css';
 
@@ -31,6 +33,9 @@ export default function Contas() {
   const [lancamentos, setLancamentos] = useState(carregar);
   const [formulario, setFormulario] = useState(null); // conta sendo criada ou editada
   const [erro, setErro] = useState('');
+  const [extrato, setExtrato] = useState(null); // OFX lido, esperando a conferência
+  const [avisoImportacao, setAvisoImportacao] = useState(null); // { tipo: 'ok' | 'erro', texto }
+  const campoOFX = useRef(null);
 
   // Sempre que algo mudar, salva no aparelho
   useEffect(() => salvarContas(contas), [contas]);
@@ -98,6 +103,72 @@ export default function Contas() {
     return undefined;
   }
 
+  // ----- Importar extrato (OFX) -----
+  async function escolherOFX(evento) {
+    const arquivo = evento.target.files[0];
+    evento.target.value = '';
+    if (!arquivo) return;
+    setAvisoImportacao(null);
+    try {
+      setExtrato(await lerArquivoOFX(arquivo));
+    } catch (e) {
+      setAvisoImportacao({ tipo: 'erro', texto: e.message || 'Não foi possível ler este arquivo.' });
+    }
+  }
+
+  function confirmarImportacao({ conta: nomeDigitado, cartao, itens, saldo, saldoData }) {
+    // Usa a conta existente (sem ligar para maiúsculas/acentos) ou cria uma nova
+    const existente = contas.find((c) => mesmoNome(c.nome, nomeDigitado));
+    const nome = existente ? existente.nome : nomeDigitado;
+
+    const novos = itens.map((t) => ({
+      id: novoId(),
+      data: t.data,
+      descricao: t.descricao,
+      categoria: t.categoria,
+      conta: nome,
+      valor: t.valor,
+      pago: true, // movimentação do extrato já aconteceu
+      repete: false,
+      observacao: 'Importado do extrato (OFX)',
+      ofx: t.chave, // evita importar a mesma movimentação duas vezes
+    }));
+    const todos = [...novos, ...lancamentos];
+
+    // Saldo igual ao do banco: calcula o saldo inicial que faz a conta bater com o extrato naquela data
+    let saldoInicial = existente ? existente.saldoInicial : 0;
+    if (saldo !== null) {
+      const movimentado = todos
+        .filter((l) => l.conta === nome && l.pago && l.data <= saldoData)
+        .reduce((s, l) => s + l.valor, 0);
+      saldoInicial = Math.round((saldo - movimentado) * 100) / 100;
+    }
+
+    if (existente) {
+      setContas((atual) => atual.map((c) => (c.id === existente.id ? { ...c, saldoInicial } : c)));
+    } else {
+      setContas((atual) => [
+        ...atual,
+        {
+          id: novoId(),
+          nome,
+          tipo: cartao ? 'Cartão de crédito' : 'Conta corrente',
+          saldoInicial,
+          cor: CORES[atual.length % CORES.length],
+          noTotal: true,
+        },
+      ]);
+    }
+    setLancamentos(todos);
+    setExtrato(null);
+    setAvisoImportacao({
+      tipo: 'ok',
+      texto: `${novos.length} ${novos.length === 1 ? 'lançamento importado' : 'lançamentos importados'} para ${nome}${
+        existente ? '' : ' (conta criada)'
+      }.${saldo !== null ? ' Saldo igual ao do banco.' : ''} Já aparecem em Lançamentos, Painel e Relatórios.`,
+    });
+  }
+
   function excluir(conta) {
     const quantos = conta.quantidade;
     const aviso =
@@ -119,6 +190,11 @@ export default function Contas() {
             <p className="pp__subtitulo">Seus bancos, carteira e investimentos em um só lugar</p>
           </div>
           <div className="pp__acoes">
+            <button type="button" className="ct__importar" onClick={() => campoOFX.current?.click()}>
+              <IconeEnviar tamanho={18} espessura={2.4} />
+              Importar OFX
+            </button>
+            <input ref={campoOFX} type="file" accept=".ofx,.qfx,application/x-ofx" hidden onChange={escolherOFX} />
             <button type="button" className="pp__novo ct__novo" onClick={abrirNova}>
               <IconeMais tamanho={18} espessura={2.6} />
               Nova conta
@@ -126,6 +202,14 @@ export default function Contas() {
           </div>
         </div>
 
+        {avisoImportacao && (
+          <p className={`ct__aviso ct__aviso--${avisoImportacao.tipo}`} role={avisoImportacao.tipo === 'erro' ? 'alert' : 'status'}>
+            {avisoImportacao.texto}
+            <button type="button" onClick={() => setAvisoImportacao(null)} aria-label="Fechar aviso">
+              ×
+            </button>
+          </p>
+        )}
 
         {/* ===== Saldo total ===== */}
         <div className="ct__resumo">
@@ -263,8 +347,19 @@ export default function Contas() {
         {contas.length === 0 && (
           <p className="ct__dica">
             Dica: não precisa cadastrar antes. Ao fazer um <Link to="/painel/lancamentos">lançamento</Link> com uma conta nova,
-            ela aparece aqui sozinha.
+            ela aparece aqui sozinha. Ou use <b>Importar OFX</b> para trazer o extrato do seu banco.
           </p>
+        )}
+
+        {/* ===== Conferência do extrato ===== */}
+        {extrato && (
+          <ImportarOFX
+            extrato={extrato}
+            contas={contas}
+            lancamentos={lancamentos}
+            aoConfirmar={confirmarImportacao}
+            aoFechar={() => setExtrato(null)}
+          />
         )}
 
         {/* ===== Formulário (nova conta / editar) ===== */}

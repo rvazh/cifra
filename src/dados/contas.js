@@ -5,7 +5,7 @@ import { inicioDoMes } from './preferencias.js';
 
 const CHAVE = 'cifra:contas';
 
-export const TIPOS = ['Conta corrente', 'Poupança', 'Carteira', 'Investimento', 'Outra'];
+export const TIPOS = ['Conta corrente', 'Poupança', 'Carteira', 'Cartão de crédito', 'Investimento', 'Outra'];
 
 // Cores (tons pastel) que a pessoa pode escolher para cada conta
 export const CORES = ['#D9CCF0', '#F5C08F', '#A8D5A2', '#9EC5E8', '#E7AFC3', '#F3DE8A', '#EEE6D8'];
@@ -45,7 +45,7 @@ export function nomesDasContas() {
 }
 
 // Compara nomes sem ligar para maiúsculas, acentos e espaços ("nubank " = "Nubank")
-function mesmoNome(a, b) {
+export function mesmoNome(a, b) {
   const limpar = (t) => t.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   return limpar(a) === limpar(b);
 }
