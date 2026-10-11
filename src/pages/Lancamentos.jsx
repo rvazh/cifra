@@ -4,11 +4,10 @@ import MenuLateral from '../components/MenuLateral.jsx';
 import { IconeSeta, IconeBusca, IconeClipe } from '../components/Icones.jsx';
 import { TIPOS_ACEITOS, guardarComprovante, pegarComprovante, vincularComprovante } from '../dados/comprovantes.js';
 import { reais } from '../components/Graficos.jsx';
-import { nomesDasContas } from '../dados/contas.js';
+import { nomesDasContas, garantirConta } from '../dados/contas.js';
 import {
   carregarCategorias,
   salvarCategorias,
-  CONTAS,
   categoria,
   carregar,
   salvar,
@@ -71,11 +70,10 @@ export default function Lancamentos() {
   // Sempre que a lista mudar, salva no aparelho
   useEffect(() => salvar(lista), [lista]);
 
-  // Nomes das contas cadastradas na tela de Contas
-  const [contas] = useState(nomesDasContas);
-
-  const contaPadrao = contas.includes('Carteira') ? 'Carteira' : contas[0] || 'Carteira';
-  const opcoesDeConta = contas.length ? contas : CONTAS;
+  // Nomes das contas cadastradas na tela de Contas.
+  // A pessoa pode digitar uma conta nova: ela é criada na hora de lançar.
+  const [contas, setContas] = useState(nomesDasContas);
+  const contaPadrao = contas[0] || '';
 
   // Formulário de novo lançamento (manual)
   const formularioVazio = (tipo = 'despesa', conta = contaPadrao) => ({
@@ -121,6 +119,11 @@ export default function Lancamentos() {
     if (!valorDoNovo) return setErro('Coloque o valor, por exemplo 45,90.');
     if (!novo.data) return setErro('Escolha a data.');
     if (parcelado && (qtdParcelas < 2 || qtdParcelas > 48)) return setErro('O número de parcelas vai de 2 a 48.');
+    if (!novo.conta.trim()) return setErro('Diga em qual conta foi, por exemplo "Nubank" ou "Carteira".');
+
+    // Se a conta ainda não existe, ela é criada na tela de Contas
+    const { nome: nomeDaConta, criada: contaCriada } = garantirConta(novo.conta);
+    if (contaCriada) setContas(nomesDasContas());
 
     const hoje = dataDeHoje();
     const sinal = novo.tipo === 'receita' ? 1 : -1;
@@ -143,7 +146,7 @@ export default function Lancamentos() {
         data,
         descricao: vezes > 1 ? `${titulo} (${i + 1}/${vezes})` : titulo,
         categoria: novo.categoria,
-        conta: novo.conta,
+        conta: nomeDaConta,
         valor: (sinal * centavos) / 100,
         pago: data <= hoje, // datas futuras ficam "a pagar"
         repete: novo.frequencia === 'fixo', // fixo: aparece todo mês (e no Checklist)
@@ -171,7 +174,7 @@ export default function Lancamentos() {
     setMes(mesFinanceiro(novos[0].data));
     setSelecionadoId(novos[0].id);
     setEditando(null);
-    setNovo(formularioVazio(novo.tipo, novo.conta));
+    setNovo(formularioVazio(novo.tipo, nomeDaConta));
     setArquivo(null);
     setErro('');
     const textoComprovante = arquivo ? ' Comprovante guardado.' : '';
@@ -182,7 +185,8 @@ export default function Lancamentos() {
           ? 'Conta fixa salva: ela aparece todo mês.'
           : 'Lançamento salvo.';
     const textoChecklist = novos[0].valor < 0 && (vezes > 1 || novo.frequencia === 'fixo') ? ' Já está no Checklist.' : '';
-    setAviso(textoBase + textoChecklist + textoComprovante);
+    const textoConta = contaCriada ? ` Conta "${nomeDaConta}" criada.` : '';
+    setAviso(textoBase + textoChecklist + textoConta + textoComprovante);
     return undefined;
   }
 
@@ -291,10 +295,13 @@ export default function Lancamentos() {
     evento.preventDefault();
     const valor = Math.abs(parseFloat(String(editando.valorTexto).replace(/\./g, '').replace(',', '.')));
     if (!Number.isFinite(valor) || valor === 0) return;
+    if (!editando.conta.trim()) return;
+    const { nome: nomeDaConta, criada } = garantirConta(editando.conta);
+    if (criada) setContas(nomesDasContas());
     const atualizado = {
       ...editando,
+      conta: nomeDaConta,
       valor: editando.tipo === 'receita' ? valor : -valor,
-      exemplo: false,
     };
     delete atualizado.valorTexto;
     delete atualizado.tipo;
@@ -385,11 +392,13 @@ export default function Lancamentos() {
             </label>
             <label className="novo__campo">
               Conta
-              <select value={novo.conta} onChange={(e) => mudarNovo('conta', e.target.value)}>
-                {opcoesDeConta.map((c) => (
-                  <option key={c}>{c}</option>
-                ))}
-              </select>
+              <input
+                list="lista-de-contas"
+                autoComplete="off"
+                placeholder="Ex.: Nubank"
+                value={novo.conta}
+                onChange={(e) => mudarNovo('conta', e.target.value)}
+              />
             </label>
             <label className="novo__campo">
               Categoria
@@ -545,7 +554,7 @@ export default function Lancamentos() {
             </div>
 
             {visiveis.length === 0 ? (
-              <p className="lanc__vazio">{busca ? `Nada encontrado para “${busca}” neste mês.` : 'Nenhum lançamento por aqui ainda. Use o lançamento rápido acima.'}</p>
+              <p className="lanc__vazio">{busca ? `Nada encontrado para “${busca}” neste mês.` : 'Nenhum lançamento neste mês ainda. Use o “Novo lançamento” acima.'}</p>
             ) : (
               <ul className="movs">
                 {visiveis.map((l) => (
@@ -725,11 +734,13 @@ export default function Lancamentos() {
                   </label>
                   <label className="edicao__campo">
                     Conta
-                    <select value={editando.conta} onChange={(e) => setEditando({ ...editando, conta: e.target.value })}>
-                      {[...new Set([...(contas.length ? contas : CONTAS), editando.conta])].map((c) => (
-                        <option key={c}>{c}</option>
-                      ))}
-                    </select>
+                    <input
+                      list="lista-de-contas"
+                      autoComplete="off"
+                      value={editando.conta}
+                      onChange={(e) => setEditando({ ...editando, conta: e.target.value })}
+                      required
+                    />
                   </label>
                 </div>
                 <label className="edicao__campo">
@@ -757,6 +768,13 @@ export default function Lancamentos() {
             )}
           </aside>
         </div>
+
+        {/* Sugestões de conta (as que já existem) para os campos "Conta" */}
+        <datalist id="lista-de-contas">
+          {contas.map((c) => (
+            <option key={c} value={c} />
+          ))}
+        </datalist>
 
         {/* ===== Janela: nova categoria ===== */}
         {novaCategoria && (

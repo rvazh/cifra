@@ -500,3 +500,18 @@
   opacity: 0.7;
   cursor: wait;
 }
+
+/* Aviso de quem veio da página "Teste grátis" */
+.entrar__teste {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--dourado-claro);
+  border: 1px solid var(--dourado);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--texto-suave);
+}
+
+.entrar__teste b {
+  color: var(--preto);
+}

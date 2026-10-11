@@ -500,6 +500,23 @@
   box-shadow: -2px 1px 0 var(--preto);
 }
 
+.plano__teste {
+  align-self: flex-start;
+  margin-top: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--dourado-claro);
+  color: var(--dourado-escuro);
+  font-size: 13px;
+  font-weight: 800;
+  transition: background 0.2s, color 0.2s;
+}
+
+.plano__teste:hover {
+  background: var(--preto);
+  color: var(--dourado);
+}
+
 .planos__aviso {
   margin-top: 36px;
   max-width: 640px;

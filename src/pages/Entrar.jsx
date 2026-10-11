@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import logoCifra from '../assets/cifra-logo.png';
 import { IconeSeta, IconeCheck } from '../components/Icones.jsx';
 import { conferirAcesso, iniciarSessao } from '../dados/acesso.js';
+import { iniciarTeste, DIAS_DE_TESTE } from '../dados/plano.js';
 import './Entrar.css';
 
 // Ícone do Google (src/assets/google.png), mostrado à direita do texto do botão.
@@ -63,6 +64,8 @@ export default function Entrar() {
       return;
     }
     iniciarSessao();
+    // Veio da página "Teste grátis": o teste do Essencial começa agora
+    if (local.state?.teste) iniciarTeste();
     // Volta para a tela que a pessoa tentou abrir, ou vai para o painel
     navegar(local.state?.de || '/painel', { replace: true });
   }
@@ -85,6 +88,12 @@ export default function Entrar() {
 
         <form className="entrar__form" onSubmit={enviar}>
           <img className="entrar__logo" src={logoCifra} alt="CIFRA" />
+
+          {local.state?.teste && (
+            <p className="entrar__teste">
+              <b>Teste grátis:</b> seus {DIAS_DE_TESTE} dias do Plano Essencial começam assim que você entrar.
+            </p>
+          )}
 
           <div className="entrar__campo">
             <label htmlFor="usuario" className="entrar__rotulo">

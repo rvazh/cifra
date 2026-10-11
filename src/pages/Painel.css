@@ -142,6 +142,104 @@
   text-decoration: underline;
 }
 
+/* Aviso do teste grátis acabando */
+.pp__alerta--teste {
+  background: var(--preto);
+  border-color: var(--preto);
+  color: var(--branco);
+}
+
+.pp__alerta--teste .pp__alerta-textos span {
+  color: #bdb4a4;
+}
+
+.pp__alerta--teste .pp__alerta-link {
+  color: var(--dourado);
+}
+
+/* Primeiros passos (usuário novo) */
+.pp-comeco {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
+  gap: 18px 28px;
+  align-items: center;
+  border: 2px solid var(--dourado);
+}
+
+.pp-comeco__texto {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--texto-suave);
+}
+
+.pp-comeco__passos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pp-comeco__passos li {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--fundo-painel);
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.pp-comeco__passos li > span:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pp-comeco__passos b {
+  font-size: 14px;
+  color: var(--preto);
+}
+
+.pp-comeco__numero {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--preto);
+  color: var(--dourado);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.pp-comeco__link {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: var(--dourado);
+  color: var(--preto);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.pp-comeco__link:hover {
+  background: var(--preto);
+  color: var(--dourado);
+}
+
+@media (max-width: 900px) {
+  .pp-comeco {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* ===== Cartões de resumo ===== */
 .pp__resumos {
   display: grid;

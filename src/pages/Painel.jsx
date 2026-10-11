@@ -13,6 +13,7 @@ import {
 } from '../dados/lancamentos.js';
 import { carregarContas, resumoDaConta } from '../dados/contas.js';
 import { carregarPreferencias } from '../dados/preferencias.js';
+import { situacaoDoPlano } from '../dados/plano.js';
 import './Painel.css';
 
 const MESES_CURTOS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -122,12 +123,14 @@ export default function Painel() {
   const aPagar = doMesCalendario.slice(0, 4);
   const totalAPagar = doMesCalendario.reduce((s, l) => s - l.valor, 0);
 
-  const temExemplos = lista.some((l) => l.exemplo) || contas.some((c) => c.exemplo);
+  // Usuário novo: ainda não lançou nada
+  const comecando = lista.length === 0;
 
   // Aviso de contas a vencer (ligado e desligado nas Configurações)
   const preferencias = carregarPreferencias();
   const avisos = preferencias.avisarContas ? emAberto.filter((l) => diasAte(l.data) <= preferencias.diasDeAviso) : [];
   const atrasadas = avisos.filter((l) => diasAte(l.data) < 0).length;
+  const plano = situacaoDoPlano();
   const vencendo = avisos.length - atrasadas;
 
   return (
@@ -144,7 +147,6 @@ export default function Painel() {
             </h1>
             <p className="pp__subtitulo">
               <span className="pp__data">{hojePorExtenso}</span> · aqui está o resumo do seu mês
-              {temExemplos && <span className="pp__exemplo">Dados de exemplo</span>}
             </p>
           </div>
           <div className="pp__acoes">
@@ -161,6 +163,25 @@ export default function Painel() {
             </Link>
           </div>
         </div>
+
+        {/* Teste grátis acabando (aparece nos 3 últimos dias) */}
+        {plano.emTeste && plano.diasRestantes <= 3 && (
+          <div className="pp__alerta pp__alerta--teste" role="status">
+            <span className="pp__alerta-icone">
+              <IconeSino tamanho={18} espessura={2.2} />
+            </span>
+            <div className="pp__alerta-textos">
+              <b>
+                Seu teste do Plano Essencial termina{' '}
+                {plano.diasRestantes === 1 ? 'amanhã' : `em ${plano.diasRestantes} dias`}
+              </b>
+              <span>Se não assinar, você passa para o Plano Gratuito. Seus dados continuam salvos.</span>
+            </div>
+            <Link to="/planos" className="pp__alerta-link">
+              Ver planos
+            </Link>
+          </div>
+        )}
 
         {avisos.length > 0 && (
           <div className="pp__alerta" role="status">
@@ -212,6 +233,51 @@ export default function Painel() {
             variante="claro"
           />
         </div>
+
+        {/* Primeiros passos (só para quem ainda não lançou nada) */}
+        {comecando && (
+          <section className="cartao pp-comeco">
+            <div>
+              <h2 className="cartao__titulo">Comece por aqui</h2>
+              <p className="pp-comeco__texto">
+                Sua CIFRA está zerada. Conforme você lança, tudo se atualiza sozinho: saldo, contas, calendário,
+                checklist e relatórios.
+              </p>
+            </div>
+            <ol className="pp-comeco__passos">
+              <li>
+                <span className="pp-comeco__numero">1</span>
+                <span>
+                  <b>Faça seu primeiro lançamento</b>
+                  Diga a conta (ex.: Nubank). Se ela não existir, a CIFRA cria para você.
+                </span>
+                <Link to="/painel/lancamentos" className="pp-comeco__link">
+                  Lançar
+                </Link>
+              </li>
+              <li>
+                <span className="pp-comeco__numero">2</span>
+                <span>
+                  <b>Ajuste o saldo das contas</b>
+                  Em Contas, coloque quanto já tem em cada uma hoje.
+                </span>
+                <Link to="/painel/contas" className="pp-comeco__link">
+                  Contas
+                </Link>
+              </li>
+              <li>
+                <span className="pp-comeco__numero">3</span>
+                <span>
+                  <b>Cadastre as contas fixas</b>
+                  Aluguel, internet, assinaturas: marque como fixo e elas aparecem todo mês.
+                </span>
+                <Link to="/painel/calendario" className="pp-comeco__link">
+                  Calendário
+                </Link>
+              </li>
+            </ol>
+          </section>
+        )}
 
         {/* Gráfico */}
         <section className="cartao">

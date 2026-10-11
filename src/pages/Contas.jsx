@@ -260,6 +260,13 @@ export default function Contas() {
           </button>
         </div>
 
+        {contas.length === 0 && (
+          <p className="ct__dica">
+            Dica: não precisa cadastrar antes. Ao fazer um <Link to="/painel/lancamentos">lançamento</Link> com uma conta nova,
+            ela aparece aqui sozinha.
+          </p>
+        )}
+
         {/* ===== Formulário (nova conta / editar) ===== */}
         {formulario && (
           <div className="ct-fundo" onClick={() => setFormulario(null)}>

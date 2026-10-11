@@ -1,6 +1,6 @@
 // ===== Contas: bancos, carteira, poupança... =====
 // Tudo fica salvo só neste aparelho (localStorage do navegador).
-import { dataDeHoje, lancamentosDoMes, mesFinanceiro } from './lancamentos.js';
+import { carregar, dataDeHoje, lancamentosDoMes, mesFinanceiro, novoId } from './lancamentos.js';
 import { inicioDoMes } from './preferencias.js';
 
 const CHAVE = 'cifra:contas';
@@ -10,24 +10,25 @@ export const TIPOS = ['Conta corrente', 'Poupança', 'Carteira', 'Investimento',
 // Cores (tons pastel) que a pessoa pode escolher para cada conta
 export const CORES = ['#D9CCF0', '#F5C08F', '#A8D5A2', '#9EC5E8', '#E7AFC3', '#F3DE8A', '#EEE6D8'];
 
-// Contas de exemplo (aparecem só na primeira vez).
-// Os nomes batem com os lançamentos de exemplo, então o saldo de cada uma já vem calculado.
-function exemplos() {
-  return [
-    { id: 'conta-exemplo-1', nome: 'Nubank', tipo: 'Conta corrente', saldoInicial: 1950, cor: '#D9CCF0', noTotal: true, exemplo: true },
-    { id: 'conta-exemplo-2', nome: 'Inter', tipo: 'Conta corrente', saldoInicial: 1459.6, cor: '#F5C08F', noTotal: true, exemplo: true },
-    { id: 'conta-exemplo-3', nome: 'Carteira', tipo: 'Carteira', saldoInicial: 1080, cor: '#A8D5A2', noTotal: true, exemplo: true },
-  ];
+// Versões antigas vinham com 3 contas de exemplo (Nubank, Inter e Carteira).
+// Elas são tiradas, menos as que a pessoa já usou em algum lançamento dela:
+// essas ficam, mas com saldo inicial zerado.
+function semExemplos(contas) {
+  const usadas = new Set(carregar().map((l) => l.conta));
+  return contas
+    .filter((c) => !c.exemplo || usadas.has(c.nome))
+    .map((c) => (c.exemplo ? { ...c, exemplo: false, saldoInicial: 0 } : c));
 }
 
+// Um usuário novo começa sem nenhuma conta
 export function carregarContas() {
   try {
     const salvo = localStorage.getItem(CHAVE);
-    if (salvo) return JSON.parse(salvo);
+    if (salvo) return semExemplos(JSON.parse(salvo));
   } catch {
     /* sem acesso ao armazenamento */
   }
-  return exemplos();
+  return [];
 }
 
 export function salvarContas(contas) {
@@ -38,9 +39,36 @@ export function salvarContas(contas) {
   }
 }
 
-// Só os nomes (usado no lançamento rápido e na edição de lançamentos)
+// Só os nomes (usado nos formulários de lançamento e do calendário)
 export function nomesDasContas() {
   return carregarContas().map((c) => c.nome);
+}
+
+// Compara nomes sem ligar para maiúsculas, acentos e espaços ("nubank " = "Nubank")
+function mesmoNome(a, b) {
+  const limpar = (t) => t.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return limpar(a) === limpar(b);
+}
+
+// Garante que a conta existe: se a pessoa digitou uma conta nova num lançamento,
+// ela é criada na tela de Contas (saldo inicial R$ 0,00).
+// Devolve o nome certinho da conta (do jeito que está cadastrada) e se ela foi criada agora.
+export function garantirConta(nome) {
+  const limpo = nome.trim().replace(/\s+/g, ' ');
+  const contas = carregarContas();
+  const existente = contas.find((c) => mesmoNome(c.nome, limpo));
+  if (existente) return { nome: existente.nome, criada: false };
+
+  const nova = {
+    id: novoId(),
+    nome: limpo,
+    tipo: /carteira|dinheiro/i.test(limpo) ? 'Carteira' : 'Conta corrente',
+    saldoInicial: 0,
+    cor: CORES[contas.length % CORES.length],
+    noTotal: true,
+  };
+  salvarContas([...contas, nova]);
+  return { nome: nova.nome, criada: true };
 }
 
 // Números de uma conta a partir dos lançamentos

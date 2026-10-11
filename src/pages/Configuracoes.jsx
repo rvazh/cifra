@@ -23,6 +23,7 @@ import { EMAIL_CONTATO } from '../config.js';
 import { pedirPermissaoDeAviso } from '../dados/alertas.js';
 import { apagarTodosComprovantes } from '../dados/comprovantes.js';
 import './Painel.css';
+import { situacaoDoPlano } from '../dados/plano.js';
 import './Configuracoes.css';
 
 const VERSAO = '1.0';
@@ -87,6 +88,12 @@ function Interruptor({ ligado, aoMudar, rotulo }) {
   );
 }
 
+// "Plano Essencial (teste)" durante o teste grátis; senão, o plano atual
+function textoDoPlano() {
+  const plano = situacaoDoPlano();
+  return plano.emTeste ? `${plano.nome} (teste)` : plano.nome;
+}
+
 export default function Configuracoes() {
   const [preferencias, setPreferencias] = useState(carregarPreferencias);
   const [nome, setNome] = useState(lerNome);
@@ -95,7 +102,7 @@ export default function Configuracoes() {
   const [mensagem, setMensagem] = useState('');
   const arquivoBackup = useRef(null);
 
-  const [contagem, setContagem] = useState(() => contar());
+  const [contagem] = useState(() => contar());
 
   function contar() {
     const lancamentos = carregar();
@@ -104,10 +111,7 @@ export default function Configuracoes() {
     return {
       contas: contas.length,
       lancamentos: lancamentos.length,
-      exemplos:
-        lancamentos.filter((l) => l.exemplo).length +
-        contas.filter((c) => c.exemplo).length +
-        objetivos.filter((o) => o.exemplo).length,
+      objetivos: objetivos.length,
       porCategoria: lancamentos.reduce((g, l) => ({ ...g, [l.categoria]: (g[l.categoria] || 0) + 1 }), {}),
     };
   }
@@ -215,18 +219,6 @@ export default function Configuracoes() {
   }
 
   // ----- Apagar -----
-  function apagarExemplos() {
-    if (contagem.exemplos === 0) {
-      setMensagem('Não há dados de exemplo para apagar.');
-      return;
-    }
-    salvar(carregar().filter((l) => !l.exemplo && !String(l.origem || '').startsWith('exemplo')));
-    salvarContas(carregarContas().filter((c) => !c.exemplo));
-    salvarObjetivos(carregarObjetivos().filter((o) => !o.exemplo));
-    setContagem(contar());
-    setMensagem('Dados de exemplo apagados.');
-  }
-
   async function apagarTudo() {
     const certeza = window.confirm(
       'Apagar todos os dados deste aparelho?\n\nContas, lançamentos, objetivos, comprovantes e preferências serão apagados. Não tem volta.'
@@ -237,7 +229,7 @@ export default function Configuracoes() {
     } catch {
       /* sem acesso ao armazenamento */
     }
-    // Listas vazias, para os exemplos não voltarem
+    // Deixa tudo zerado, como um usuário novo
     salvar([]);
     salvarContas([]);
     salvarObjetivos([]);
@@ -268,7 +260,7 @@ export default function Configuracoes() {
             <div className="cfg-perfil__textos">
               <b className="cfg-perfil__nome">{nome || 'Sem nome'}</b>
               <span className="cfg-perfil__plano">
-                Plano Gratuito · usando a CIFRA desde {nomeDoMes(preferencias.desde).toLowerCase().replace(' ', ' de ')}
+                {textoDoPlano()} · usando a CIFRA desde {nomeDoMes(preferencias.desde).toLowerCase().replace(' ', ' de ')}
               </span>
               <div className="cfg-perfil__chips">
                 <span>
@@ -400,14 +392,6 @@ export default function Configuracoes() {
               </Linha>
             </button>
             <input ref={arquivoBackup} type="file" accept=".json,application/json" hidden onChange={restaurarBackup} />
-            <button type="button" className="cfg-linha" onClick={apagarExemplos}>
-              <Linha Icone={IconeLixeira} titulo="Apagar dados de exemplo" sub="O que você cadastrou continua salvo">
-                <span className="cfg-linha__valor">
-                  {contagem.exemplos === 0 ? 'nenhum' : contagem.exemplos}
-                  <Seta />
-                </span>
-              </Linha>
-            </button>
           </Grupo>
 
           {/* ===== Sobre ===== */}
@@ -415,7 +399,7 @@ export default function Configuracoes() {
             <Link to="/planos" className="cfg-linha">
               <Linha Icone={IconeEstrela} titulo="Plano">
                 <span className="cfg-linha__valor">
-                  Gratuito
+                  {textoDoPlano().replace('Plano ', '')}
                   <Seta />
                 </span>
               </Linha>

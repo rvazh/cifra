@@ -667,3 +667,15 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Dica para quem ainda não tem conta */
+.ct__dica {
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+.ct__dica a {
+  font-weight: 700;
+  color: var(--dourado-escuro);
+  text-decoration: underline;
+}

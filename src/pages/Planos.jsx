@@ -32,6 +32,8 @@ const planos = [
       { texto: 'Saldo de cada conta e saldo geral', incluso: true },
       { texto: 'Alertas financeiros', incluso: false },
       { texto: 'Calendário financeiro', incluso: false },
+      { texto: 'Sem acesso ao Checklist', incluso: false },
+      { texto: 'Sem acesso a Cursos e Notícias', incluso: false },
     ],
   },
   {
@@ -43,7 +45,7 @@ const planos = [
     itens: [
       { texto: <>Tudo do <b>Plano Gratuito</b></>, incluso: true },
       { texto: <><b>Até 3 contas</b></>, incluso: true },
-      { texto: 'Até 15 alertas', incluso: true },
+      { texto: 'Até 10 alertas financeiros no mês', incluso: true },
       { texto: 'Relatórios fáceis de entender', incluso: true },
       { texto: 'Acesso básico aos cursos', incluso: true },
     ],
@@ -54,9 +56,11 @@ const planos = [
     precoMensal: 29.9,
     precoAnual: 26.9,
     destaque: 'Mais popular',
+    teste: true, // mostra o link do teste grátis
     botao: 'Quero esse plano',
     itens: [
       { texto: <>Tudo do <b>Plano Base</b></>, incluso: true },
+      { texto: <><b>Contas ilimitadas</b></>, incluso: true },
       { texto: 'Planejamentos prontos', incluso: true },
       { texto: 'Calendário financeiro', incluso: true },
       { texto: 'Alertas e lembretes ilimitados', incluso: true },
@@ -203,6 +207,11 @@ export default function Planos() {
                         ? `R$ ${formatarPreco(preco * 12)} cobrados uma vez por ano`
                         : 'Cobrado todo mês, cancele quando quiser'}
                   </p>
+                  {plano.teste && (
+                    <Link to="/teste-gratis" className="plano__teste">
+                      Teste 14 dias grátis →
+                    </Link>
+                  )}
 
                   <ul className="plano__lista">
                     {plano.itens.map((item, indice) => (

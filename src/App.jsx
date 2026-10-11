@@ -22,6 +22,7 @@ import AlertasDeVencimento from './components/AlertasDeVencimento.jsx';
 import Checklist from './pages/Checklist.jsx';
 import Noticias from './pages/Noticias.jsx';
 import Comprovantes from './pages/Comprovantes.jsx';
+import TesteGratis from './pages/TesteGratis.jsx';
 
 // Páginas que aparecem sem o cabeçalho e o rodapé do site
 const telasSemMenu = ['/entrar', '/privacidade', '/termos'];
@@ -57,7 +58,7 @@ export default function App() {
           <Route path="/" element={<Inicio />} />
           <Route path="/quem-somos" element={<QuemSomos />} />
           <Route path="/planos" element={<Planos />} />
-          <Route path="/blog" element={<EmBreve titulo="Blog" />} />
+          <Route path="/teste-gratis" element={<TesteGratis />} />
           <Route path="/entrar" element={<Entrar />} />
           <Route path="/painel" element={<Painel />} />
           <Route path="/painel/lancamentos" element={<Lancamentos />} />

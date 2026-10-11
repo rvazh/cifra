@@ -1,5 +1,5 @@
 // ===== Acesso (login) =====
-// O e-mail e a senha NÃO ficam escritos aqui. Guardamos só o "hash" SHA-256 deles:
+// O usuário e a senha NÃO ficam escritos aqui. Guardamos só o "hash" SHA-256 deles:
 // uma impressão digital embaralhada que não dá para desfazer de volta no texto original.
 // Na hora de entrar, o navegador calcula o hash do que foi digitado e compara com este.
 //
@@ -8,7 +8,7 @@
 // num servidor.
 
 const SAL = 'cifra:2026'; // texto extra misturado antes de calcular o hash
-const HASH_DO_ACESSO = 'c44d711ee836a61cabac02465f44d9841750b4d1043c19e8fe3ff9f33c7a7280';
+const HASH_DO_ACESSO = 'f71a180b18c2566e6e136dddf2e392d181dd89236110a9573567e8223bd9c20b';
 const CHAVE_SESSAO = 'cifra:sessao';
 
 // Calcula o SHA-256 de um texto e devolve em hexadecimal
@@ -20,7 +20,7 @@ async function sha256(texto) {
     .join('');
 }
 
-// true se usuário e senha estão certos. O e-mail não diferencia maiúsculas e ignora espaços nas pontas.
+// true se usuário e senha estão certos. O usuário não diferencia maiúsculas e ignora espaços nas pontas.
 export async function conferirAcesso(usuario, senha) {
   if (!window.crypto?.subtle) throw new Error('sem-crypto'); // só funciona em https ou localhost
   const hash = await sha256(`${SAL}|${usuario.trim().toLowerCase()}|${senha}`);

@@ -6,7 +6,7 @@ const links = [
   { para: '/', texto: 'Início' },
   { para: '/quem-somos', texto: 'Quem somos' },
   { para: '/planos', texto: 'Planos' },
-  { para: '/blog', texto: 'Blog' },
+  { para: '/teste-gratis', texto: 'Teste grátis' },
 ];
 
 export default function Header() {

@@ -103,120 +103,6 @@ export function diasNoMes(mes) {
   return new Date(ano, m, 0).getDate();
 }
 
-// ----- Lançamentos de exemplo (aparecem só na primeira vez) -----
-function exemplos() {
-  const mes = dataDeHoje().slice(0, 8); // "2026-10-"
-  const hoje = Number(dataDeHoje().slice(8));
-  // [dia, descrição, categoria, conta, valor, repete todo mês?]
-  const itens = [
-    ['09', 'Salário', 'Salário', 'Nubank', 5200, true],
-    ['08', 'Mercado', 'Alimentação', 'Nubank', -812.9],
-    ['07', 'Parcela do carro', 'Transporte', 'Nubank', -1390.99, true],
-    ['06', 'Freela', 'Extra', 'Inter', 500],
-    ['05', 'Conta de luz', 'Moradia', 'Nubank', -189.4],
-    ['05', 'Aluguel', 'Moradia', 'Nubank', -1400, true],
-    ['04', 'Restaurante', 'Alimentação', 'Carteira', -200],
-    ['03', 'Venda (OLX)', 'Extra', 'Carteira', 407.2],
-    ['03', 'Internet', 'Moradia', 'Inter', -99.9, true],
-    ['02', 'Farmácia', 'Saúde', 'Carteira', -87.16],
-    ['01', 'Pix da Adriana', 'Extra', 'Nubank', 312.8],
-    // Contas que ainda vão vencer (aparecem no calendário como "a pagar")
-    ['15', 'Condomínio', 'Moradia', 'Nubank', -450, true],
-    ['18', 'Netflix', 'Lazer', 'Nubank', -44.9, true],
-    ['20', 'Academia', 'Saúde', 'Inter', -99.9, true],
-    ['22', 'Fatura do cartão', 'Outros', 'Nubank', -1250],
-    ['28', 'Seguro do carro', 'Transporte', 'Inter', -210],
-  ];
-  const doMes = itens.map(([dia, descricao, cat, conta, valor, repete = false], i) => ({
-    id: `exemplo-${i}`,
-    data: mes + dia,
-    descricao,
-    categoria: cat,
-    conta,
-    valor,
-    pago: Number(dia) <= hoje, // o que já passou está pago; o resto fica "a pagar"
-    repete,
-    observacao: '',
-    exemplo: true,
-  }));
-  return [...doMes, ...historicoDeExemplo(), ...parcelasDeExemplo()];
-}
-
-// Uma compra parcelada de exemplo: celular em 10x, começou há 4 meses (aparece no Checklist)
-function parcelasDeExemplo() {
-  const total = 10;
-  const inicio = mudarMes(dataDeHoje().slice(0, 7), -4);
-  const hoje = dataDeHoje();
-  return Array.from({ length: total }, (_, i) => {
-    const data = `${mudarMes(inicio, i)}-12`;
-    return {
-      id: `exemplo-p${i}`,
-      data,
-      descricao: `Celular novo (${i + 1}/${total})`,
-      categoria: 'Outros',
-      conta: 'Inter',
-      valor: -189.9,
-      pago: data <= hoje,
-      repete: false,
-      observacao: '',
-      grupo: 'exemplo-celular',
-      parcela: { numero: i + 1, total },
-      exemplo: true,
-    };
-  });
-}
-
-// Cinco meses anteriores de exemplo, para os relatórios terem o que comparar.
-// Os valores mudam um pouco de mês para mês, como na vida real.
-function historicoDeExemplo() {
-  const variacoes = [
-    // mercado, luz, fatura, restaurante, gasolina, freela, farmácia, lazer
-    [742.3, 176.8, 340.4, 186.5, 230, 650, 64.9, 120],
-    [815.6, 201.35, 420.1, 240, 260.4, 0, 0, 89.9],
-    [698.9, 168.2, 365.75, 152.3, 215.8, 900, 112.4, 210],
-    [776.45, 189.9, 510.3, 264.8, 248, 400, 0, 75],
-    [731.2, 214.6, 388.6, 198.9, 236.5, 550, 58.3, 160],
-  ];
-  const itens = [];
-  variacoes.forEach(([mercado, luz, fatura, restaurante, gasolina, freela, farmacia, lazer], i) => {
-    const mes = mudarMes(dataDeHoje().slice(0, 7), -(i + 1)) + '-';
-    const linhas = [
-      ['05', 'Salário', 'Salário', 'Nubank', 5200],
-      ['05', 'Aluguel', 'Moradia', 'Nubank', -1400],
-      ['07', 'Parcela do carro', 'Transporte', 'Nubank', -1390.99],
-      ['03', 'Internet', 'Moradia', 'Inter', -99.9],
-      ['15', 'Condomínio', 'Moradia', 'Nubank', -450],
-      ['18', 'Netflix', 'Lazer', 'Nubank', -44.9],
-      ['20', 'Academia', 'Saúde', 'Inter', -99.9],
-      ['10', 'Mercado', 'Alimentação', 'Nubank', -mercado],
-      ['12', 'Conta de luz', 'Moradia', 'Nubank', -luz],
-      ['22', 'Fatura do cartão', 'Outros', 'Nubank', -fatura],
-      ['16', 'Restaurante', 'Alimentação', 'Nubank', -restaurante],
-      ['13', 'Gasolina', 'Transporte', 'Inter', -gasolina],
-      ['25', 'Freela', 'Extra', 'Inter', freela],
-      ['09', 'Farmácia', 'Saúde', 'Carteira', -farmacia],
-      ['26', 'Cinema', 'Lazer', 'Carteira', -lazer],
-    ];
-    linhas
-      .filter((l) => l[4] !== 0 && l[4] !== -0)
-      .forEach(([dia, descricao, cat, conta, valor], j) =>
-        itens.push({
-          id: `exemplo-h${i}-${j}`,
-          data: mes + dia,
-          descricao,
-          categoria: cat,
-          conta,
-          valor,
-          pago: true,
-          repete: false,
-          observacao: '',
-          exemplo: true,
-        })
-      );
-  });
-  return itens;
-}
-
 // ----- Mês financeiro -----
 // Nas Configurações a pessoa pode dizer que o mês dela começa em outro dia (ex.: dia 5, quando cai o salário).
 // Aí "outubro" vai de 5/out a 4/nov. Com o dia 1 (padrão), é o mês normal do calendário.
@@ -273,7 +159,7 @@ export function comSituacao(lista, item, situacao) {
   if (situacaoDe(item) === situacao) return lista;
   const campos = { pago: situacao === 'pago', guardado: situacao === 'guardado' };
   if (item.previsto) {
-    const real = { ...item, ...campos, id: novoId(), repete: false, exemplo: false };
+    const real = { ...item, ...campos, id: novoId(), repete: false };
     delete real.previsto;
     return [real, ...lista];
   }
@@ -281,14 +167,20 @@ export function comSituacao(lista, item, situacao) {
 }
 
 // ----- Ler e salvar -----
+// Versões antigas da CIFRA vinham com lançamentos de exemplo: eles são tirados aqui
+export function ehExemplo(l) {
+  return Boolean(l.exemplo) || String(l.origem || '').startsWith('exemplo') || String(l.id || '').startsWith('exemplo');
+}
+
+// Um usuário novo começa com a lista vazia
 export function carregar() {
   try {
     const salvo = localStorage.getItem(CHAVE);
-    if (salvo) return JSON.parse(salvo);
+    if (salvo) return JSON.parse(salvo).filter((l) => !ehExemplo(l));
   } catch {
     /* sem acesso ao armazenamento */
   }
-  return exemplos();
+  return [];
 }
 
 export function salvar(lista) {

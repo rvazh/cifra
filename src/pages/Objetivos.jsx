@@ -69,7 +69,6 @@ export default function Objetivos() {
   const totalGuardado = objetivos.reduce((s, o) => s + o.guardado, 0);
   const totalMeta = objetivos.reduce((s, o) => s + o.meta, 0);
   const porcentoTotal = totalMeta > 0 ? Math.min((totalGuardado / totalMeta) * 100, 100) : 0;
-  const temExemplos = objetivos.some((o) => o.exemplo);
 
   // Muda um campo do formulário e apaga a mensagem de erro
   function atualizar(mudanca) {
@@ -166,14 +165,6 @@ export default function Objetivos() {
               <span className="obj-total__porcento">{Math.round(porcentoTotal)}%</span>
             </section>
 
-            {temExemplos && (
-              <p className="obj__aviso">
-                Estes objetivos são de exemplo.{' '}
-                <button type="button" onClick={() => setObjetivos((atual) => atual.filter((o) => !o.exemplo))}>
-                  Apagar exemplos
-                </button>
-              </p>
-            )}
           </>
         )}
 

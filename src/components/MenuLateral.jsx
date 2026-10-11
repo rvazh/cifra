@@ -18,6 +18,7 @@ import {
 } from './Icones.jsx';
 import { valoresEscondidos, alternarValores } from '../dados/preferencias.js';
 import { encerrarSessao } from '../dados/acesso.js';
+import { situacaoDoPlano, DIAS_DE_TESTE } from '../dados/plano.js';
 import './MenuLateral.css';
 
 // Itens do menu lateral do sistema (usado no Painel, Lançamentos...)
@@ -37,6 +38,44 @@ const menu = [
 // No celular o menu vira uma barra que rola para o lado. Guardamos a posição
 // para a barra não voltar ao começo cada vez que a pessoa troca de aba.
 const CHAVE_ROLAGEM = 'cifra:menu-rolagem';
+
+// Cartão "Seu plano": mostra o teste grátis (com os dias que faltam) ou o plano atual
+function CartaoDoPlano() {
+  const plano = situacaoDoPlano();
+  if (plano.emTeste) {
+    return (
+      <div className="lateral__plano">
+        <span className="lateral__plano-rotulo">Teste grátis · {plano.nome}</span>
+        <b>
+          {plano.diasRestantes === 1 ? 'Falta 1 dia' : `Faltam ${plano.diasRestantes} dias`}
+        </b>
+        <span className="lateral__plano-trilho" aria-hidden="true">
+          <span style={{ width: `${(plano.diasUsados / DIAS_DE_TESTE) * 100}%` }} />
+        </span>
+        <span className="lateral__plano-nota">Depois: Plano Gratuito, se não assinar</span>
+        <Link to="/planos" className="lateral__plano-link">
+          Assinar um plano →
+        </Link>
+      </div>
+    );
+  }
+  return (
+    <div className="lateral__plano">
+      <span className="lateral__plano-rotulo">Seu plano</span>
+      <b>{plano.nome}</b>
+      {plano.testeTerminou && !plano.assinado && <span className="lateral__plano-nota">Seu teste do Essencial terminou</span>}
+      {plano.testeTerminou || plano.assinado ? (
+        <Link to="/planos" className="lateral__plano-link">
+          Conhecer os planos →
+        </Link>
+      ) : (
+        <Link to="/teste-gratis" className="lateral__plano-link">
+          Testar o Essencial grátis →
+        </Link>
+      )}
+    </div>
+  );
+}
 
 export default function MenuLateral() {
   const navegar = useNavigate();
@@ -95,13 +134,7 @@ export default function MenuLateral() {
       </nav>
 
       <div className="lateral__fim">
-        <div className="lateral__plano">
-          <span className="lateral__plano-rotulo">Seu plano</span>
-          <b>Plano Gratuito</b>
-          <Link to="/planos" className="lateral__plano-link">
-            Conhecer os planos →
-          </Link>
-        </div>
+        <CartaoDoPlano />
         <button
           type="button"
           className="lateral__extra"

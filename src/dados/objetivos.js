@@ -1,30 +1,20 @@
 // ===== Objetivos: dinheiro separado para um sonho ou uma meta =====
 // Tudo fica salvo só neste aparelho (localStorage do navegador).
-import { dataDeHoje, mudarMes } from './lancamentos.js';
+import { dataDeHoje } from './lancamentos.js';
 
 const CHAVE = 'cifra:objetivos';
 
 // Ícones que a pessoa pode escolher para cada objetivo
 export const ICONES = ['✈️', '🛟', '💻', '🏠', '🚗', '🎓', '💍', '🎁', '📱', '🌱'];
 
-// Objetivos de exemplo (aparecem só na primeira vez)
-function exemplos() {
-  const mes = dataDeHoje().slice(0, 7);
-  return [
-    { id: 'objetivo-exemplo-1', nome: 'Viagem de férias', icone: '✈️', meta: 5000, guardado: 3400, prazo: mudarMes(mes, 9), exemplo: true },
-    { id: 'objetivo-exemplo-2', nome: 'Reserva de emergência', icone: '🛟', meta: 10000, guardado: 7200, prazo: mudarMes(mes, 14), exemplo: true },
-    { id: 'objetivo-exemplo-3', nome: 'Notebook novo', icone: '💻', meta: 4500, guardado: 1200, prazo: mudarMes(mes, 5), exemplo: true },
-  ];
-}
-
 export function carregarObjetivos() {
   try {
     const salvo = localStorage.getItem(CHAVE);
-    if (salvo) return JSON.parse(salvo);
+    if (salvo) return JSON.parse(salvo).filter((o) => !o.exemplo); // tira os exemplos de versões antigas
   } catch {
     /* sem acesso ao armazenamento */
   }
-  return exemplos();
+  return []; // usuário novo: nenhum objetivo ainda
 }
 
 export function salvarObjetivos(lista) {

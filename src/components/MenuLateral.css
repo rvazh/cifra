@@ -111,6 +111,24 @@
   color: #bdb4a4;
 }
 
+.lateral__plano-nota {
+  font-size: 12px;
+  color: #bdb4a4;
+}
+
+.lateral__plano-trilho {
+  height: 6px;
+  border-radius: 999px;
+  background: #3a342a;
+  overflow: hidden;
+}
+
+.lateral__plano-trilho span {
+  display: block;
+  height: 100%;
+  background: var(--dourado);
+}
+
 .lateral__plano-link {
   font-size: 13px;
   font-weight: 700;

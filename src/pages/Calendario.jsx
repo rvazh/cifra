@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom';
 import MenuLateral from '../components/MenuLateral.jsx';
 import { IconeMais } from '../components/Icones.jsx';
 import { reais } from '../components/Graficos.jsx';
-import { nomesDasContas } from '../dados/contas.js';
+import { nomesDasContas, garantirConta } from '../dados/contas.js';
 import { carregarPreferencias } from '../dados/preferencias.js';
 import { pedirPermissaoDeAviso, conferirAlertasAgora } from '../dados/alertas.js';
 import {
-  CONTAS,
   categoria,
   carregar,
   salvar,
@@ -143,8 +142,7 @@ export default function Calendario() {
   }
 
   // ----- Novo evento (vencimento) -----
-  const contas = nomesDasContas();
-  const opcoesDeConta = contas.length ? contas : CONTAS;
+  const contas = nomesDasContas(); // a pessoa também pode digitar uma conta nova
 
   function abrirEvento() {
     setErro('');
@@ -154,7 +152,7 @@ export default function Calendario() {
       valorTexto: '',
       tipo: 'despesa',
       data: diaEscolhido,
-      conta: contas.includes('Carteira') ? 'Carteira' : opcoesDeConta[0],
+      conta: contas[0] || '',
       fixo: false,
     });
   }
@@ -171,13 +169,17 @@ export default function Calendario() {
     if (!titulo) return setErro('Dê um nome para o evento, por exemplo "Conta de luz".');
     if (!valor) return setErro('Coloque o valor, por exemplo 189,90.');
     if (!evento.data) return setErro('Escolha a data do vencimento.');
+    if (!evento.conta.trim()) return setErro('Diga de qual conta sai (ou entra) o dinheiro, por exemplo "Nubank".');
+
+    // Conta nova? Já cria na tela de Contas
+    const { nome: nomeDaConta, criada: contaCriada } = garantirConta(evento.conta);
 
     const novo = {
       id: novoId(),
       data: evento.data,
       descricao: titulo,
       categoria: 'Outros',
-      conta: evento.conta,
+      conta: nomeDaConta,
       valor: evento.tipo === 'receita' ? valor : -valor,
       pago: false, // é um vencimento: fica "a pagar" até ser marcado
       repete: evento.fixo, // fixo = aparece todo mês a partir desta data
@@ -189,9 +191,10 @@ export default function Calendario() {
     setMes(evento.data.slice(0, 7));
     setDiaEscolhido(evento.data);
     setAviso(
-      evento.tipo === 'receita'
+      (evento.tipo === 'receita'
         ? 'Evento criado.'
-        : 'Evento criado. Você será avisado 3 dias antes e 1 dia antes do vencimento.'
+        : 'Evento criado. Você será avisado 3 dias antes e 1 dia antes do vencimento.') +
+        (contaCriada ? ` Conta "${nomeDaConta}" criada.` : '')
     );
     pedirPermissaoDeAviso(); // pede para mostrar notificações (só pergunta uma vez)
     conferirAlertasAgora(); // se já está perto de vencer, o aviso sai na hora
@@ -401,11 +404,18 @@ export default function Calendario() {
                   </div>
                   <label className="cal-evento__campo">
                     Conta
-                    <select value={evento.conta} onChange={(e) => mudarEvento('conta', e.target.value)}>
-                      {opcoesDeConta.map((c) => (
-                        <option key={c}>{c}</option>
+                    <input
+                      list="cal-contas"
+                      autoComplete="off"
+                      placeholder="Ex.: Nubank"
+                      value={evento.conta}
+                      onChange={(e) => mudarEvento('conta', e.target.value)}
+                    />
+                    <datalist id="cal-contas">
+                      {contas.map((c) => (
+                        <option key={c} value={c} />
                       ))}
-                    </select>
+                    </datalist>
                   </label>
 
                   <div className="cal-evento__opcoes" role="group" aria-label="Frequência">

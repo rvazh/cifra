@@ -141,7 +141,6 @@ export default function Relatorios() {
 
   const atual = totais(itens);
   const antes = totais(anteriores);
-  const temExemplos = itens.some((l) => l.exemplo);
 
   // Gráfico mês a mês (no modo "Mês", mostra os 6 meses até o mês escolhido)
   const mesesDoGrafico = periodo.id === 'mes' ? mesesDoPeriodo(referencia, PERIODOS[2]) : meses;
@@ -259,7 +258,6 @@ export default function Relatorios() {
             <h1 className="pp__titulo">Relatórios</h1>
             <p className="pp__subtitulo">
               Para onde foi o seu dinheiro em {nomeDoPeriodo(referencia, periodo)}
-              {temExemplos && <span className="pp__exemplo">Dados de exemplo</span>}
             </p>
           </div>
           <div className="rel__acoes">
